@@ -63,8 +63,8 @@ importers:
 
   vega-homepage:
     dependencies:
-      '@alphacode/design-system':
-        specifier: workspace:*
+      '@alphacode-ai/design-system':
+        specifier: ^0.1.0
         version: link:../alphaCode-designSystem
       autoprefixer:
         specifier: ^10.4.27
