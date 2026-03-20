@@ -1,0 +1,123 @@
+/* ── Pretendard 폰트 ─────────────────────────────────────── */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
+/* ============================================================
+   @alphacode/design-system — CSS Variables (Design Tokens)
+   VEGA UI 색상 시스템 기반 매핑
+   ============================================================ */
+
+/* ── Light Mode ─────────────────────────────────────────── */
+:root {
+  /* [Primary] 디자인 가이드: ac-primary */
+  --primary:            20 100% 50%;   /* ac-primary-50 (Main / #FF6300) */
+  --primary-foreground: 0 0% 100%;     /* ac-white */
+  --primary-hover:      21 100% 44%;   /* ac-primary-60 (Hover / #E05700) */
+  --primary-active:     21 100% 39%;   /* ac-primary-70 (Active / #C74D00) */
+
+  /* [Background] */
+  --background:         0 0% 100%;     /* ac-white (#FFFFFF) */
+  --foreground:         0 0% 2%;       /* ac-black (#060606) */
+
+  /* [Secondary] 디자인 가이드: ac-gray */
+  --secondary:          0 0% 97%;      /* ac-gray-10 (Sub Background / #F7F7F7) */
+  --secondary-foreground: 0 0% 33%;    /* ac-gray-80 (Body Text / #555555) */
+
+  /* [Muted] 디자인 가이드: ac-gray (연한 무채색) */
+  --muted:              0 0% 93%;      /* ac-gray-20 (#ECECEC) */
+  --muted-foreground:   0 0% 51%;      /* ac-gray-60 (#828282) */
+
+  /* [Accent] 디자인 가이드: ac-gray (강조 무채색) */
+  --accent:             0 0% 93%;      /* ac-gray-20 (#ECECEC) */
+  --accent-foreground:  0 0% 2%;       /* ac-black */
+
+  /* [Semantic] 디자인 가이드: Semantic Palette */
+  --destructive:        0 100% 50%;    /* ac-red-50 (Danger Main / #FE0000) */
+  --destructive-foreground: 0 0% 100%;
+
+  --success:            145 100% 38%;  /* ac-green-50 (Complete Main / #00C344) */
+  --success-foreground: 0 0% 100%;
+
+  --warning:            28 100% 52%;   /* ac-orange-50 (Warning Main / #FF7A0C) */
+  --warning-foreground: 0 0% 100%;
+
+  --info:               218 100% 50%;  /* ac-blue-50 (Success Main / #006FFF) */
+  --info-foreground:    0 0% 100%;
+
+  --pending:            271 100% 59%;  /* ac-purple-50 (Pending Main / #8E2AFF) */
+  --pending-foreground: 0 0% 100%;
+
+  /* [Border / Input] 디자인 가이드: ac-gray 스케일 */
+  --border:             0 0% 85%;      /* ac-gray-40 (Border Solid / #D9D9D9) */
+  --input:              0 0% 85%;      /* ac-gray-40 */
+  --ring:               20 100% 50%;   /* ac-primary-50 */
+
+  /* [Card / Popover] */
+  --card:               0 0% 100%;     /* ac-white */
+  --card-foreground:    0 0% 2%;       /* ac-black */
+  --popover:            0 0% 100%;
+  --popover-foreground: 0 0% 2%;
+}
+
+/* ── Dark Mode (다크모드용 토큰 최적화) ─────────────────────────── */
+.dark {
+  --background:         0 0% 7%;       /* 다크 모드 배경색 */
+  --foreground:         0 0% 95%;      /* 다크 모드 기본 텍스트 */
+
+  --primary:            21 100% 56%;   /* ac-primary-40 기반 (다크에서 시인성 확보) */
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary:          0 0% 13%;      /* 다크 모드 서브 배경 */
+  --secondary-foreground: 0 0% 80%;
+
+  --border:             0 0% 20%;      /* 다크 모드 경계선 */
+  --input:              0 0% 20%;
+  --ring:               21 100% 56%;
+
+  --card:               0 0% 9%;
+  --card-foreground:    0 0% 95%;
+  --popover:            0 0% 8%;
+  --popover-foreground: 0 0% 95%;
+}
+
+/* ── Base resets ─────────────────────────────────────────── */
+* {
+  border-color: hsl(var(--border));
+  box-sizing: border-box;
+}
+
+html {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: "Pretendard Variable", "Pretendard", sans-serif;
+  font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+.break-korean {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

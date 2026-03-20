@@ -1,0 +1,44 @@
+name: Publish @alphacode/design-system
+
+on:
+  push:
+    tags:
+      # design-system-v0.1.0 형식의 태그 푸시 시 트리거
+      - "design-system-v*"
+
+jobs:
+  publish:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write  # GitHub Packages 쓰기 권한
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@alphacode"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build design-system
+        run: pnpm --filter @alphacode/design-system build
+
+      - name: Publish to GitHub Packages
+        run: pnpm --filter @alphacode/design-system publish --no-git-checks
+        env:
+          # GITHUB_TOKEN은 Actions에서 자동 제공 — 별도 설정 불필요
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
