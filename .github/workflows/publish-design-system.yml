@@ -35,10 +35,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build design-system
-        run: pnpm --filter @alphacode/design-system build
+        run: pnpm --filter @alphacode-ai/design-system build
 
       - name: Publish to GitHub Packages
-        run: pnpm --filter @alphacode/design-system publish --no-git-checks
+        run: pnpm --filter @alphacode-ai/design-system publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
