@@ -1,0 +1,14 @@
+# pnpm
+.pnpm-store/
+node_modules/
+
+# 빌드 결과
+dist/
+
+# 환경변수
+.env
+.env.local
+
+# OS
+.DS_Store
+EOF
