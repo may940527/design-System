@@ -1,5 +1,5 @@
 {
-  "name": "@may940527/design-system",
+  "name": "@alphacode/design-system",
   "version": "0.1.0",
   "description": "AlphaCode Design System — Tailwind preset, design tokens, and UI components",
   "type": "module",
