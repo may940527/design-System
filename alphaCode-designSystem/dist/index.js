@@ -1250,10 +1250,10 @@ Avatar.displayName = "Avatar";
 
 // src/components/Input/DatePicker/index.tsx
 import * as React11 from "react";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import { ko } from "date-fns/locale";
-import { format, isValid } from "date-fns";
-import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, isValid, addMonths, subMonths, startOfDay } from "date-fns";
+import { CalendarIcon, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 var inputSizeClass = {
   lg: "h-10 px-3 text-sm",
@@ -1264,54 +1264,77 @@ var inputStateClass = {
   default: "border-border",
   complete: "border-border",
   error: "border-ac-red-50",
-  disable: "border-border opacity-60"
+  disable: "border-border"
 };
-function getDayPickerClassNames() {
-  const defaultClassNames = getDefaultClassNames();
+var BASE_DAY_CLASSNAMES = {
+  root: "w-full select-none",
+  months: "flex flex-col",
+  month: "",
+  month_caption: "",
+  caption_label: "hidden",
+  nav: "hidden",
+  weeks: "",
+  weekdays: "flex px-3 py-1",
+  weekday: "w-10 h-10 flex items-center justify-center text-sm font-medium text-foreground",
+  week: "flex px-3",
+  day: "relative text-center",
+  day_button: cn(
+    "h-10 w-10 rounded-full text-sm font-medium transition-colors",
+    "hover:bg-ac-gray-20 focus:outline-none"
+  ),
+  today: "[&:not(.selected)>button]:ring-1 [&:not(.selected)>button]:ring-ac-primary-50 [&:not(.selected)>button]:text-ac-primary-50 [&:not(.selected)>button]:font-bold",
+  outside: "[&>button]:!text-ac-gray-50",
+  disabled: "pointer-events-none [&>button]:opacity-30"
+};
+function getDayPickerClassNames(mode = "single") {
+  if (mode === "range") {
+    return {
+      ...BASE_DAY_CLASSNAMES,
+      selected: "",
+      range_start: "[&>button]:!bg-ac-black [&>button]:!text-white [&>button]:!font-bold",
+      range_end: "[&>button]:!bg-ac-black [&>button]:!text-white [&>button]:!font-bold",
+      range_middle: "[&>button]:!bg-ac-gray-20 [&>button]:!rounded-none [&>button]:!text-ac-black"
+    };
+  }
   return {
-    ...defaultClassNames,
-    root: "w-[280px]",
-    months: "flex flex-col",
-    month: "space-y-3",
-    month_caption: "flex items-center justify-between px-1 mb-1",
-    caption_label: "hidden",
-    nav: "flex items-center gap-1",
-    button_previous: "p-1 rounded hover:bg-ac-gray-20 transition-colors",
-    button_next: "p-1 rounded hover:bg-ac-gray-20 transition-colors",
-    weeks: "w-full border-collapse",
-    weekdays: "flex",
-    weekday: "text-muted-foreground w-9 text-center text-xs font-medium",
-    week: "flex w-full mt-1",
-    day: "relative p-0 text-center text-sm",
-    day_button: cn(
-      "h-9 w-9 rounded-full text-sm font-normal transition-colors",
-      "hover:bg-ac-gray-20 focus:outline-none focus:ring-2 focus:ring-ring"
-    ),
-    selected: "bg-ac-primary-50 text-white rounded-full hover:bg-ac-primary-60",
-    today: "text-ac-primary-50 font-semibold",
-    outside: "text-muted-foreground opacity-50",
-    disabled: "text-muted-foreground opacity-30 cursor-not-allowed",
-    range_start: "bg-ac-primary-50 text-white rounded-full",
-    range_end: "bg-ac-primary-50 text-white rounded-full",
-    range_middle: "bg-ac-primary-10 text-foreground rounded-none"
+    ...BASE_DAY_CLASSNAMES,
+    selected: "[&>button]:!bg-ac-black [&>button]:!text-white [&>button]:!font-bold",
+    range_start: "",
+    range_end: "",
+    range_middle: ""
   };
 }
-function MonthCaptionComponent({
+function MonthHeader({
   calendarMonth,
-  onViewChange,
-  setDisplayMonth
+  setDisplayMonth,
+  onYearClick,
+  onMonthClick,
+  showPrev = true,
+  showNext = true
 }) {
-  return /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between w-full px-1", children: [
-    /* @__PURE__ */ jsxs10("div", { className: "flex items-center gap-1", children: [
+  const year = calendarMonth.date.getFullYear();
+  const month = calendarMonth.date.getMonth();
+  return /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between bg-ac-gray-10 px-6 h-[60px]", children: [
+    showPrev ? /* @__PURE__ */ jsx13(
+      "button",
+      {
+        type: "button",
+        onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)),
+        className: "flex items-center justify-center w-9 h-9 rounded-md hover:bg-ac-gray-20 transition-colors",
+        children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" })
+      }
+    ) : /* @__PURE__ */ jsx13("div", { className: "w-9" }),
+    /* @__PURE__ */ jsxs10("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxs10(
         "button",
         {
           type: "button",
-          onClick: () => onViewChange?.("year"),
-          className: "text-sm font-semibold hover:text-ac-primary-50 transition-colors",
+          onClick: onYearClick,
+          className: "flex items-center gap-1 px-3 h-10 rounded-md hover:bg-ac-gray-20 text-sm font-bold text-foreground transition-colors",
           children: [
-            calendarMonth.date.getFullYear(),
-            "\uB144"
+            year,
+            "\uB144",
+            /* @__PURE__ */ jsx13(ChevronDown, { className: "w-4 h-4 text-muted-foreground" })
           ]
         }
       ),
@@ -1319,94 +1342,197 @@ function MonthCaptionComponent({
         "button",
         {
           type: "button",
-          onClick: () => onViewChange?.("month"),
-          className: "text-sm font-semibold hover:text-ac-primary-50 transition-colors",
+          onClick: onMonthClick,
+          className: "flex items-center gap-1 px-3 h-10 rounded-md hover:bg-ac-gray-20 text-sm font-bold text-foreground transition-colors",
           children: [
-            calendarMonth.date.getMonth() + 1,
-            "\uC6D4"
+            month + 1,
+            "\uC6D4",
+            /* @__PURE__ */ jsx13(ChevronDown, { className: "w-4 h-4 text-muted-foreground" })
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs10("div", { className: "flex items-center gap-1", children: [
+    showNext ? /* @__PURE__ */ jsx13(
+      "button",
+      {
+        type: "button",
+        onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1)),
+        className: "flex items-center justify-center w-9 h-9 rounded-md hover:bg-ac-gray-20 transition-colors",
+        children: /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" })
+      }
+    ) : /* @__PURE__ */ jsx13("div", { className: "w-9" })
+  ] });
+}
+function YearView({
+  currentYear,
+  selectedYear,
+  onSelectYear,
+  minYear,
+  maxYear
+}) {
+  const [yearPage, setYearPage] = React11.useState(Math.floor(currentYear / 9) * 9);
+  const years = Array.from({ length: 9 }, (_, i) => yearPage + i);
+  const isPrevDisabled = minYear !== void 0 && yearPage - 1 < minYear;
+  const isNextDisabled = maxYear !== void 0 && yearPage + 9 > maxYear;
+  return /* @__PURE__ */ jsxs10("div", { className: "w-[318px]", children: [
+    /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between bg-ac-gray-10 px-6 h-[60px]", children: [
       /* @__PURE__ */ jsx13(
         "button",
         {
           type: "button",
-          onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)),
-          className: "p-1 rounded hover:bg-ac-gray-20",
+          onClick: () => setYearPage((y) => y - 9),
+          disabled: isPrevDisabled,
+          className: "flex items-center justify-center w-9 h-9 rounded-md hover:bg-ac-gray-20 transition-colors disabled:opacity-30 disabled:pointer-events-none",
           children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" })
         }
       ),
+      /* @__PURE__ */ jsxs10("span", { className: "text-sm font-bold text-foreground", children: [
+        yearPage,
+        " \u2013 ",
+        yearPage + 8
+      ] }),
       /* @__PURE__ */ jsx13(
         "button",
         {
           type: "button",
-          onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1)),
-          className: "p-1 rounded hover:bg-ac-gray-20",
+          onClick: () => setYearPage((y) => y + 9),
+          disabled: isNextDisabled,
+          className: "flex items-center justify-center w-9 h-9 rounded-md hover:bg-ac-gray-20 transition-colors disabled:opacity-30 disabled:pointer-events-none",
           children: /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" })
         }
       )
-    ] })
-  ] });
-}
-function SingleCalendar({ selected, onSelect, view = "day", onViewChange }) {
-  const [displayMonth, setDisplayMonth] = React11.useState(selected ?? /* @__PURE__ */ new Date());
-  const [yearPage, setYearPage] = React11.useState(Math.floor(displayMonth.getFullYear() / 9) * 9);
-  const MONTHS_KO = ["1\uC6D4", "2\uC6D4", "3\uC6D4", "4\uC6D4", "5\uC6D4", "6\uC6D4", "7\uC6D4", "8\uC6D4", "9\uC6D4", "10\uC6D4", "11\uC6D4", "12\uC6D4"];
-  if (view === "year") {
-    const years = Array.from({ length: 9 }, (_, i) => yearPage + i);
-    return /* @__PURE__ */ jsxs10("div", { className: "p-3 w-[280px]", children: [
-      /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between mb-3", children: [
-        /* @__PURE__ */ jsx13("button", { type: "button", onClick: () => setYearPage((y) => y - 9), className: "p-1 rounded hover:bg-ac-gray-20", children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" }) }),
-        /* @__PURE__ */ jsxs10("span", { className: "text-sm font-semibold", children: [
-          yearPage,
-          " \u2013 ",
-          yearPage + 8
-        ] }),
-        /* @__PURE__ */ jsx13("button", { type: "button", onClick: () => setYearPage((y) => y + 9), className: "p-1 rounded hover:bg-ac-gray-20", children: /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" }) })
-      ] }),
-      /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-3 gap-1", children: years.map((y) => /* @__PURE__ */ jsx13(
+    ] }),
+    /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-3 gap-2 p-4", children: years.map((y) => {
+      const isDisabled = minYear !== void 0 && y < minYear || maxYear !== void 0 && y > maxYear;
+      return /* @__PURE__ */ jsx13(
         "button",
         {
           type: "button",
-          onClick: () => {
-            setDisplayMonth(new Date(y, displayMonth.getMonth(), 1));
-            onViewChange?.("month");
-          },
-          className: cn("rounded-md py-2 text-sm font-medium transition-colors", selected?.getFullYear() === y ? "bg-ac-primary-50 text-white" : "hover:bg-ac-gray-20"),
+          onClick: () => onSelectYear(y),
+          disabled: isDisabled,
+          className: cn(
+            "rounded-md py-2.5 text-base font-medium transition-colors",
+            isDisabled ? "opacity-30 pointer-events-none" : selectedYear === y ? "bg-ac-balck-50 text-white font-bold" : "hover:bg-ac-gray-20"
+          ),
           children: y
         },
         y
-      )) })
-    ] });
-  }
-  if (view === "month") {
-    return /* @__PURE__ */ jsxs10("div", { className: "p-3 w-[280px]", children: [
-      /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between mb-3", children: [
-        /* @__PURE__ */ jsx13("button", { type: "button", onClick: () => onViewChange?.("year"), className: "p-1 rounded hover:bg-ac-gray-20", children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" }) }),
-        /* @__PURE__ */ jsxs10("button", { type: "button", onClick: () => onViewChange?.("year"), className: "text-sm font-semibold hover:text-ac-primary-50 transition-colors", children: [
-          displayMonth.getFullYear(),
-          "\uB144"
-        ] }),
-        /* @__PURE__ */ jsx13("div", { className: "w-6" })
-      ] }),
-      /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-3 gap-1", children: MONTHS_KO.map((m, i) => /* @__PURE__ */ jsx13(
+      );
+    }) })
+  ] });
+}
+var MONTHS_KO = ["1\uC6D4", "2\uC6D4", "3\uC6D4", "4\uC6D4", "5\uC6D4", "6\uC6D4", "7\uC6D4", "8\uC6D4", "9\uC6D4", "10\uC6D4", "11\uC6D4", "12\uC6D4"];
+function MonthView({
+  currentYear,
+  selectedMonth,
+  onBack,
+  onSelectMonth,
+  minDate,
+  maxDate
+}) {
+  const isMonthDisabled = (monthIndex) => {
+    if (minDate) {
+      if (currentYear < minDate.getFullYear()) return true;
+      if (currentYear === minDate.getFullYear() && monthIndex < minDate.getMonth()) return true;
+    }
+    if (maxDate) {
+      if (currentYear > maxDate.getFullYear()) return true;
+      if (currentYear === maxDate.getFullYear() && monthIndex > maxDate.getMonth()) return true;
+    }
+    return false;
+  };
+  return /* @__PURE__ */ jsxs10("div", { className: "w-[318px]", children: [
+    /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between bg-ac-gray-10 px-6 h-[60px]", children: [
+      /* @__PURE__ */ jsx13(
         "button",
         {
           type: "button",
-          onClick: () => {
-            setDisplayMonth(new Date(displayMonth.getFullYear(), i, 1));
-            onViewChange?.("day");
-          },
-          className: cn("rounded-md py-2 text-sm font-medium transition-colors", selected?.getMonth() === i ? "bg-ac-primary-50 text-white" : "hover:bg-ac-gray-20"),
+          onClick: onBack,
+          className: "flex items-center justify-center w-9 h-9 rounded-md hover:bg-ac-gray-20 transition-colors",
+          children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" })
+        }
+      ),
+      /* @__PURE__ */ jsxs10(
+        "button",
+        {
+          type: "button",
+          onClick: onBack,
+          className: "text-sm font-bold text-foreground hover:text-ac-primary-50 transition-colors",
+          children: [
+            currentYear,
+            "\uB144"
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsx13("div", { className: "w-9" })
+    ] }),
+    /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-3 gap-2 p-4", children: MONTHS_KO.map((m, i) => {
+      const isDisabled = isMonthDisabled(i);
+      return /* @__PURE__ */ jsx13(
+        "button",
+        {
+          type: "button",
+          onClick: () => onSelectMonth(i),
+          disabled: isDisabled,
+          className: cn(
+            "rounded-md py-2.5 text-base font-medium transition-colors",
+            isDisabled ? "opacity-30 pointer-events-none" : selectedMonth === i ? "bg-ac-black text-white font-bold" : "hover:bg-ac-gray-20"
+          ),
           children: m
         },
         i
-      )) })
-    ] });
+      );
+    }) })
+  ] });
+}
+function SingleCalendar({ selected, onSelect, minDate, maxDate, disabledDates, weekendColor }) {
+  const [displayMonth, setDisplayMonth] = React11.useState(selected ?? /* @__PURE__ */ new Date());
+  const [view, setView] = React11.useState("day");
+  const disabledDays = [
+    ...minDate ? [{ before: minDate }] : [],
+    ...maxDate ? [{ after: maxDate }] : [],
+    ...disabledDates ?? []
+  ];
+  const weekendModifiers = weekendColor ? {
+    sunday: (date) => date.getDay() === 0,
+    saturday: (date) => date.getDay() === 6
+  } : void 0;
+  const weekendModifiersClassNames = weekendColor ? {
+    sunday: "[&>button]:!text-ac-red-50",
+    saturday: "[&>button]:!text-ac-blue-50"
+  } : void 0;
+  if (view === "year") {
+    return /* @__PURE__ */ jsx13(
+      YearView,
+      {
+        currentYear: displayMonth.getFullYear(),
+        selectedYear: selected?.getFullYear(),
+        onSelectYear: (y) => {
+          setDisplayMonth(new Date(y, displayMonth.getMonth(), 1));
+          setView("month");
+        },
+        minYear: minDate?.getFullYear(),
+        maxYear: maxDate?.getFullYear()
+      }
+    );
   }
-  return /* @__PURE__ */ jsx13("div", { className: "p-3", children: /* @__PURE__ */ jsx13(
+  if (view === "month") {
+    return /* @__PURE__ */ jsx13(
+      MonthView,
+      {
+        currentYear: displayMonth.getFullYear(),
+        selectedMonth: selected?.getMonth(),
+        onBack: () => setView("year"),
+        onSelectMonth: (m) => {
+          setDisplayMonth(new Date(displayMonth.getFullYear(), m, 1));
+          setView("day");
+        },
+        minDate,
+        maxDate
+      }
+    );
+  }
+  return /* @__PURE__ */ jsx13("div", { className: "w-[318px] pb-2", children: /* @__PURE__ */ jsx13(
     DayPicker,
     {
       mode: "single",
@@ -1415,110 +1541,171 @@ function SingleCalendar({ selected, onSelect, view = "day", onViewChange }) {
       month: displayMonth,
       onMonthChange: setDisplayMonth,
       locale: ko,
+      weekStartsOn: 0,
       showOutsideDays: true,
       classNames: getDayPickerClassNames(),
+      startMonth: minDate,
+      endMonth: maxDate,
+      disabled: disabledDays.length > 0 ? disabledDays : void 0,
+      modifiers: weekendModifiers,
+      modifiersClassNames: weekendModifiersClassNames,
       components: {
-        Chevron: ({ orientation }) => orientation === "left" ? /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" }),
-        MonthCaption: ({ calendarMonth }) => /* @__PURE__ */ jsx13(MonthCaptionComponent, { calendarMonth, onViewChange, setDisplayMonth })
+        MonthCaption: ({ calendarMonth }) => /* @__PURE__ */ jsx13(
+          MonthHeader,
+          {
+            calendarMonth,
+            setDisplayMonth,
+            onYearClick: () => setView("year"),
+            onMonthClick: () => setView("month")
+          }
+        )
       }
     }
   ) });
 }
-function RangeCalendar({ selected, onSelect, onConfirm }) {
+function RangeCalendar({ selected, onSelect, onConfirm, onCancel, twoMonths = false, minDate, maxDate, disabledDates, weekendColor }) {
   const startMonth = selected?.from ?? /* @__PURE__ */ new Date();
   const [displayMonth, setDisplayMonth] = React11.useState(
     new Date(startMonth.getFullYear(), startMonth.getMonth(), 1)
   );
+  const [view, setView] = React11.useState("day");
   const nextMonth = new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1);
-  return /* @__PURE__ */ jsxs10("div", { className: "p-3", children: [
-    /* @__PURE__ */ jsxs10("div", { className: "flex gap-4", children: [
-      /* @__PURE__ */ jsxs10("div", { children: [
-        /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between px-1 mb-3", children: [
-          /* @__PURE__ */ jsx13(
-            "button",
-            {
-              type: "button",
-              onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)),
-              className: "p-1 rounded hover:bg-ac-gray-20",
-              children: /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" })
-            }
-          ),
-          /* @__PURE__ */ jsxs10("span", { className: "text-sm font-semibold", children: [
-            displayMonth.getFullYear(),
-            "\uB144 ",
-            displayMonth.getMonth() + 1,
-            "\uC6D4"
-          ] }),
-          /* @__PURE__ */ jsx13("div", { className: "w-6" })
-        ] }),
-        /* @__PURE__ */ jsx13(
+  const fmtDate = (d) => d && isValid(d) ? format(d, "yyyy-MM-dd") : "";
+  const rangeText = selected?.from && selected?.to ? `${fmtDate(selected.from)} ~ ${fmtDate(selected.to)}` : selected?.from ? fmtDate(selected.from) : "";
+  const canConfirm = !!(selected?.from && selected?.to);
+  const Footer = () => /* @__PURE__ */ jsxs10("div", { className: "flex items-center px-4 gap-2 border-t border-border h-[52px] mt-1", children: [
+    /* @__PURE__ */ jsx13("span", { className: "flex-1 text-xs text-foreground truncate", children: rangeText }),
+    /* @__PURE__ */ jsx13(Button, { variant: "tertiary", size: "sm", onClick: onCancel, children: "\uCDE8\uC18C" }),
+    /* @__PURE__ */ jsx13(Button, { variant: "primary", size: "sm", onClick: onConfirm, disabled: !canConfirm, children: "\uD655\uC778" })
+  ] });
+  if (view === "year") {
+    return /* @__PURE__ */ jsx13(
+      YearView,
+      {
+        currentYear: displayMonth.getFullYear(),
+        selectedYear: selected?.from?.getFullYear(),
+        onSelectYear: (y) => {
+          setDisplayMonth(new Date(y, displayMonth.getMonth(), 1));
+          setView("month");
+        },
+        minYear: minDate?.getFullYear(),
+        maxYear: maxDate?.getFullYear()
+      }
+    );
+  }
+  if (view === "month") {
+    return /* @__PURE__ */ jsx13(
+      MonthView,
+      {
+        currentYear: displayMonth.getFullYear(),
+        selectedMonth: selected?.from?.getMonth(),
+        onBack: () => setView("year"),
+        onSelectMonth: (m) => {
+          setDisplayMonth(new Date(displayMonth.getFullYear(), m, 1));
+          setView("day");
+        },
+        minDate,
+        maxDate
+      }
+    );
+  }
+  const disabledDays = [
+    ...minDate ? [{ before: minDate }] : [],
+    ...maxDate ? [{ after: maxDate }] : [],
+    ...disabledDates ?? []
+  ];
+  const weekendModifiers = weekendColor ? {
+    sunday: (date) => date.getDay() === 0,
+    saturday: (date) => date.getDay() === 6
+  } : void 0;
+  const weekendModifiersClassNames = weekendColor ? {
+    sunday: "[&>button]:!text-ac-red-50",
+    saturday: "[&>button]:!text-ac-blue-50"
+  } : void 0;
+  const dayPickerProps = {
+    mode: "range",
+    selected,
+    onSelect,
+    locale: ko,
+    weekStartsOn: 0,
+    showOutsideDays: true,
+    classNames: getDayPickerClassNames("range"),
+    startMonth: minDate,
+    endMonth: maxDate,
+    disabled: disabledDays.length > 0 ? disabledDays : void 0,
+    modifiers: weekendModifiers,
+    modifiersClassNames: weekendModifiersClassNames
+  };
+  if (twoMonths) {
+    return /* @__PURE__ */ jsxs10("div", { children: [
+      /* @__PURE__ */ jsxs10("div", { className: "flex", children: [
+        /* @__PURE__ */ jsx13("div", { className: "w-[318px] pb-2", children: /* @__PURE__ */ jsx13(
           DayPicker,
           {
-            mode: "range",
-            selected,
-            onSelect,
+            ...dayPickerProps,
             month: displayMonth,
-            onMonthChange: () => {
-            },
-            locale: ko,
-            showOutsideDays: true,
-            hideNavigation: true,
-            classNames: getDayPickerClassNames(),
+            onMonthChange: setDisplayMonth,
             components: {
-              Chevron: ({ orientation }) => orientation === "left" ? /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" })
+              MonthCaption: ({ calendarMonth }) => /* @__PURE__ */ jsx13(
+                MonthHeader,
+                {
+                  calendarMonth,
+                  setDisplayMonth,
+                  onYearClick: () => setView("year"),
+                  onMonthClick: () => setView("month"),
+                  showNext: false
+                }
+              )
             }
           }
-        )
-      ] }),
-      /* @__PURE__ */ jsx13("div", { className: "w-px bg-border" }),
-      /* @__PURE__ */ jsxs10("div", { children: [
-        /* @__PURE__ */ jsxs10("div", { className: "flex items-center justify-between px-1 mb-3", children: [
-          /* @__PURE__ */ jsx13("div", { className: "w-6" }),
-          /* @__PURE__ */ jsxs10("span", { className: "text-sm font-semibold", children: [
-            nextMonth.getFullYear(),
-            "\uB144 ",
-            nextMonth.getMonth() + 1,
-            "\uC6D4"
-          ] }),
-          /* @__PURE__ */ jsx13(
-            "button",
-            {
-              type: "button",
-              onClick: () => setDisplayMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1)),
-              className: "p-1 rounded hover:bg-ac-gray-20",
-              children: /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsx13(
+        ) }),
+        /* @__PURE__ */ jsx13("div", { className: "w-px bg-border" }),
+        /* @__PURE__ */ jsx13("div", { className: "w-[318px] pb-2", children: /* @__PURE__ */ jsx13(
           DayPicker,
           {
-            mode: "range",
-            selected,
-            onSelect,
+            ...dayPickerProps,
             month: nextMonth,
             onMonthChange: () => {
             },
-            locale: ko,
-            showOutsideDays: true,
-            hideNavigation: true,
-            classNames: getDayPickerClassNames(),
             components: {
-              Chevron: ({ orientation }) => orientation === "left" ? /* @__PURE__ */ jsx13(ChevronLeft, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx13(ChevronRight, { className: "w-4 h-4" })
+              MonthCaption: ({ calendarMonth }) => /* @__PURE__ */ jsx13(
+                MonthHeader,
+                {
+                  calendarMonth,
+                  setDisplayMonth,
+                  onYearClick: () => setView("year"),
+                  onMonthClick: () => setView("month"),
+                  showPrev: false
+                }
+              )
             }
           }
-        )
-      ] })
-    ] }),
-    onConfirm && /* @__PURE__ */ jsx13("div", { className: "flex justify-end mt-2 pt-2 border-t border-border", children: /* @__PURE__ */ jsx13(
-      "button",
+        ) })
+      ] }),
+      /* @__PURE__ */ jsx13(Footer, {})
+    ] });
+  }
+  return /* @__PURE__ */ jsxs10("div", { className: "w-[318px]", children: [
+    /* @__PURE__ */ jsx13(
+      DayPicker,
       {
-        type: "button",
-        onClick: onConfirm,
-        className: "px-4 py-1.5 text-sm font-medium bg-ac-primary-50 text-white rounded-md hover:bg-ac-primary-60 transition-colors",
-        children: "\uD655\uC778"
+        ...dayPickerProps,
+        month: displayMonth,
+        onMonthChange: setDisplayMonth,
+        components: {
+          MonthCaption: ({ calendarMonth }) => /* @__PURE__ */ jsx13(
+            MonthHeader,
+            {
+              calendarMonth,
+              setDisplayMonth,
+              onYearClick: () => setView("year"),
+              onMonthClick: () => setView("month")
+            }
+          )
+        }
       }
-    ) })
+    ),
+    /* @__PURE__ */ jsx13(Footer, {})
   ] });
 }
 function DatePicker({
@@ -1533,14 +1720,21 @@ function DatePicker({
   placeholder = "\uB0A0\uC9DC\uB97C \uC120\uD0DD\uD574\uC8FC\uC138\uC694.",
   dateFormat = "yyyy\uB144 MM\uC6D4 dd\uC77C",
   disabled,
+  minDate,
+  maxDate,
+  offsetMonths,
+  disabledDates,
+  weekendColor,
   className,
   id
 }) {
   const [open, setOpen] = React11.useState(false);
   const [internalValue, setInternalValue] = React11.useState(defaultValue);
-  const [view, setView] = React11.useState("day");
   const controlled = value !== void 0;
   const currentValue = controlled ? value : internalValue;
+  const today = startOfDay(/* @__PURE__ */ new Date());
+  const resolvedMin = minDate ?? (offsetMonths !== void 0 ? subMonths(today, offsetMonths) : void 0);
+  const resolvedMax = maxDate ?? (offsetMonths !== void 0 ? addMonths(today, offsetMonths) : void 0);
   const inputId = id ?? React11.useId();
   const isError = state === "error" || !!errorMessage;
   const resolvedState = isError ? "error" : state;
@@ -1549,7 +1743,6 @@ function DatePicker({
     const handler = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpen(false);
-        setView("day");
       }
     };
     document.addEventListener("mousedown", handler);
@@ -1559,7 +1752,6 @@ function DatePicker({
     if (!controlled) setInternalValue(date);
     onChange?.(date);
     setOpen(false);
-    setView("day");
   };
   return /* @__PURE__ */ jsxs10("div", { className: "flex flex-col gap-1 w-full", ref: containerRef, children: [
     label && /* @__PURE__ */ jsx13("label", { htmlFor: inputId, className: "text-sm font-medium text-foreground", children: label }),
@@ -1576,9 +1768,9 @@ function DatePicker({
           "aria-invalid": isError,
           className: cn(
             "flex items-center justify-between w-full rounded-md border bg-background transition-colors",
+            "disabled:bg-ac-gray-20 disabled:cursor-not-allowed disabled:opacity-60",
             inputSizeClass[size],
             inputStateClass[resolvedState],
-            disabled && "cursor-not-allowed",
             !currentValue && "text-muted-foreground",
             className
           ),
@@ -1588,7 +1780,7 @@ function DatePicker({
           ]
         }
       ),
-      open && /* @__PURE__ */ jsx13("div", { className: "absolute z-dropdown mt-1 rounded-md border border-border bg-background shadow-lg", children: /* @__PURE__ */ jsx13(SingleCalendar, { selected: currentValue, onSelect: handleSelect, view, onViewChange: setView }) })
+      open && /* @__PURE__ */ jsx13("div", { className: "absolute z-dropdown mt-1 rounded-lg border border-border bg-background shadow-lg overflow-hidden", children: /* @__PURE__ */ jsx13(SingleCalendar, { selected: currentValue, onSelect: handleSelect, minDate: resolvedMin, maxDate: resolvedMax, disabledDates, weekendColor }) })
     ] }),
     (helperText || errorMessage) && /* @__PURE__ */ jsx13("p", { className: cn("text-xs", isError ? "text-ac-red-50" : "text-muted-foreground"), children: errorMessage || helperText })
   ] });
@@ -1606,6 +1798,12 @@ function DateRangePicker({
   endPlaceholder = "\uC885\uB8CC\uC77C",
   dateFormat = "yyyy-MM-dd",
   disabled,
+  twoMonths = false,
+  minDate,
+  maxDate,
+  offsetMonths,
+  disabledDates,
+  weekendColor,
   className,
   id
 }) {
@@ -1614,6 +1812,9 @@ function DateRangePicker({
   const [tempRange, setTempRange] = React11.useState(defaultValue);
   const controlled = value !== void 0;
   const currentValue = controlled ? value : internalValue;
+  const today = startOfDay(/* @__PURE__ */ new Date());
+  const resolvedMin = minDate ?? (offsetMonths !== void 0 ? subMonths(today, offsetMonths) : void 0);
+  const resolvedMax = maxDate ?? (offsetMonths !== void 0 ? addMonths(today, offsetMonths) : void 0);
   const inputId = id ?? React11.useId();
   const isError = state === "error" || !!errorMessage;
   const resolvedState = isError ? "error" : state;
@@ -1637,6 +1838,10 @@ function DateRangePicker({
     onChange?.(tempRange);
     setOpen(false);
   };
+  const handleCancel = () => {
+    setTempRange(currentValue);
+    setOpen(false);
+  };
   const fmt = (d) => d && isValid(d) ? format(d, dateFormat, { locale: ko }) : void 0;
   return /* @__PURE__ */ jsxs10("div", { className: "flex flex-col gap-1 w-full", ref: containerRef, children: [
     label && /* @__PURE__ */ jsx13("label", { htmlFor: inputId, className: "text-sm font-medium text-foreground", children: label }),
@@ -1653,20 +1858,33 @@ function DateRangePicker({
           "aria-invalid": isError,
           className: cn(
             "flex items-center justify-between w-full rounded-md border bg-background transition-colors gap-2",
+            "disabled:bg-ac-gray-20 disabled:cursor-not-allowed disabled:opacity-60",
             inputSizeClass[size],
             inputStateClass[resolvedState],
-            disabled && "cursor-not-allowed",
             className
           ),
           children: [
             /* @__PURE__ */ jsx13("span", { className: cn(!currentValue?.from && "text-muted-foreground"), children: fmt(currentValue?.from) ?? startPlaceholder }),
-            /* @__PURE__ */ jsx13("span", { className: "text-muted-foreground shrink-0", children: "~" }),
+            /* @__PURE__ */ jsx13("span", { className: "text-foreground shrink-0", children: "~" }),
             /* @__PURE__ */ jsx13("span", { className: cn(!currentValue?.to && "text-muted-foreground"), children: fmt(currentValue?.to) ?? endPlaceholder }),
             /* @__PURE__ */ jsx13(CalendarIcon, { className: "w-4 h-4 shrink-0 text-muted-foreground ml-auto" })
           ]
         }
       ),
-      open && /* @__PURE__ */ jsx13("div", { className: "absolute z-dropdown mt-1 rounded-md border border-border bg-background shadow-lg", children: /* @__PURE__ */ jsx13(RangeCalendar, { selected: tempRange, onSelect: setTempRange, onConfirm: handleConfirm }) })
+      open && /* @__PURE__ */ jsx13("div", { className: "absolute z-dropdown mt-1 rounded-lg border border-border bg-background shadow-lg overflow-hidden", children: /* @__PURE__ */ jsx13(
+        RangeCalendar,
+        {
+          selected: tempRange,
+          onSelect: setTempRange,
+          onConfirm: handleConfirm,
+          onCancel: handleCancel,
+          twoMonths,
+          minDate: resolvedMin,
+          maxDate: resolvedMax,
+          disabledDates,
+          weekendColor
+        }
+      ) })
     ] }),
     (helperText || errorMessage) && /* @__PURE__ */ jsx13("p", { className: cn("text-xs", isError ? "text-ac-red-50" : "text-muted-foreground"), children: errorMessage || helperText })
   ] });
@@ -1799,7 +2017,7 @@ var Textarea = React13.forwardRef(
   ({ className, label, helperText, errorMessage, state, id, disabled, ...props }, ref) => {
     const inputId = id ?? React13.useId();
     const isError = state === "error" || !!errorMessage;
-    const borderClass = isError ? "border-ac-red-50 focus:border-ac-red-50" : "border-border focus:border-ac-primary-50";
+    const borderClass = isError ? "border-ac-red-50 focus:border-ac-red-50" : "border-border focus:border-ac-gray-80";
     return /* @__PURE__ */ jsxs12("div", { className: "flex flex-col gap-1 w-full", children: [
       label && /* @__PURE__ */ jsx15("label", { htmlFor: inputId, className: "text-sm font-medium text-foreground", children: label }),
       /* @__PURE__ */ jsx15(
@@ -1838,7 +2056,7 @@ Textarea.displayName = "Textarea";
 // src/components/Input/Select/index.tsx
 import * as React14 from "react";
 import { cva as cva12 } from "class-variance-authority";
-import { ChevronDown, ChevronUp, Check } from "lucide-react";
+import { ChevronDown as ChevronDown2, ChevronUp, Check } from "lucide-react";
 import { jsx as jsx16, jsxs as jsxs13 } from "react/jsx-runtime";
 var selectVariants = cva12(
   [
@@ -1857,7 +2075,7 @@ var selectVariants = cva12(
       state: {
         default: "border-border",
         complete: "border-border",
-        focus: "border-ac-primary-50",
+        focus: "border-ac-gray-80",
         error: "border-ac-red-50",
         disable: "border-border"
       }
@@ -1924,16 +2142,16 @@ function Select({
           className: cn(selectVariants({ size, state: resolvedState }), className),
           children: [
             /* @__PURE__ */ jsx16("span", { className: cn(!selectedLabel && "text-muted-foreground"), children: selectedLabel ?? placeholder }),
-            open ? /* @__PURE__ */ jsx16(ChevronUp, { className: "shrink-0 w-4 h-4 text-muted-foreground" }) : /* @__PURE__ */ jsx16(ChevronDown, { className: "shrink-0 w-4 h-4 text-muted-foreground" })
+            open ? /* @__PURE__ */ jsx16(ChevronUp, { className: "shrink-0 w-4 h-4 text-muted-foreground" }) : /* @__PURE__ */ jsx16(ChevronDown2, { className: "shrink-0 w-4 h-4 text-muted-foreground" })
           ]
         }
       ),
-      open && /* @__PURE__ */ jsxs13(
+      open && /* @__PURE__ */ jsx16(
         "ul",
         {
           role: "listbox",
-          className: "absolute z-dropdown mt-1 w-full rounded-md border border-border bg-background shadow-sm py-1 max-h-60 overflow-auto",
-          children: [
+          className: "absolute z-dropdown mt-1 w-full rounded-md border border-border bg-background shadow-sm overflow-hidden",
+          children: /* @__PURE__ */ jsxs13("div", { className: "py-1 max-h-60 overflow-auto", children: [
             options.map((opt) => /* @__PURE__ */ jsxs13(
               "li",
               {
@@ -1942,13 +2160,13 @@ function Select({
                 "aria-disabled": opt.disabled,
                 onClick: () => !opt.disabled && handleSelect(opt.value),
                 className: cn(
-                  "flex items-center justify-between px-3 py-2 text-sm cursor-pointer",
+                  "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer",
                   opt.disabled ? "text-muted-foreground cursor-not-allowed" : "hover:bg-ac-gray-20",
                   currentValue === opt.value && "text-ac-primary-50 font-medium"
                 ),
                 children: [
-                  opt.label,
-                  currentValue === opt.value && /* @__PURE__ */ jsx16(Check, { className: "w-3.5 h-3.5" })
+                  /* @__PURE__ */ jsx16("span", { className: "w-3.5 h-3.5 shrink-0 flex items-center justify-center", children: currentValue === opt.value && /* @__PURE__ */ jsx16(Check, { className: "w-3.5 h-3.5" }) }),
+                  opt.label
                 ]
               },
               opt.value
@@ -1965,20 +2183,20 @@ function Select({
                     "aria-disabled": opt.disabled,
                     onClick: () => !opt.disabled && handleSelect(opt.value),
                     className: cn(
-                      "flex items-center justify-between px-3 py-2 text-sm cursor-pointer",
+                      "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer",
                       opt.disabled ? "text-muted-foreground cursor-not-allowed" : "hover:bg-ac-gray-20",
                       currentValue === opt.value && "text-ac-primary-50 font-medium"
                     ),
                     children: [
-                      opt.label,
-                      currentValue === opt.value && /* @__PURE__ */ jsx16(Check, { className: "w-3.5 h-3.5" })
+                      /* @__PURE__ */ jsx16("span", { className: "w-3.5 h-3.5 shrink-0 flex items-center justify-center", children: currentValue === opt.value && /* @__PURE__ */ jsx16(Check, { className: "w-3.5 h-3.5" }) }),
+                      opt.label
                     ]
                   },
                   opt.value
                 )) })
               ] })
             ] }, gi))
-          ]
+          ] })
         }
       )
     ] }),
@@ -2074,7 +2292,7 @@ var FileInput = React15.forwardRef(
             type: "file",
             multiple,
             disabled,
-            className: "sr-only",
+            className: "hidden",
             onChange: handleChange,
             "aria-invalid": isError,
             ...props
@@ -2189,7 +2407,7 @@ function ToggleGroupItem({ value, icon, tooltip, children, className, disabled, 
 
 // src/components/SideNavigation/index.tsx
 import * as React17 from "react";
-import { ChevronDown as ChevronDown2, ChevronUp as ChevronUp2 } from "lucide-react";
+import { ChevronDown as ChevronDown3, ChevronUp as ChevronUp2 } from "lucide-react";
 import { Fragment as Fragment5, jsx as jsx19, jsxs as jsxs16 } from "react/jsx-runtime";
 var SideNavContext = React17.createContext(null);
 function useSideNav() {
@@ -2256,7 +2474,7 @@ function SideNavItemRow({ item, depth }) {
   const itemContent = /* @__PURE__ */ jsxs16(Fragment5, { children: [
     item.icon && /* @__PURE__ */ jsx19("span", { className: cn("shrink-0 w-4 h-4 flex items-center justify-center", isActive && activeClassName), children: item.icon }),
     /* @__PURE__ */ jsx19("span", { className: "flex-1 min-w-0 truncate text-left", children: item.label }),
-    hasChildren && /* @__PURE__ */ jsx19("span", { className: "shrink-0 text-muted-foreground", children: isOpen ? /* @__PURE__ */ jsx19(ChevronUp2, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx19(ChevronDown2, { className: "w-4 h-4" }) })
+    hasChildren && /* @__PURE__ */ jsx19("span", { className: "shrink-0 text-muted-foreground", children: isOpen ? /* @__PURE__ */ jsx19(ChevronUp2, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx19(ChevronDown3, { className: "w-4 h-4" }) })
   ] });
   return /* @__PURE__ */ jsxs16("li", { children: [
     item.divider && /* @__PURE__ */ jsx19("div", { className: "my-1 h-px bg-border mx-3" }),
@@ -2410,12 +2628,41 @@ import * as React19 from "react";
 import { createPortal } from "react-dom";
 import { X as X2, ChevronRight as ChevronRight2, Check as Check2 } from "lucide-react";
 import { jsx as jsx21, jsxs as jsxs18 } from "react/jsx-runtime";
-var variantClass = {
-  default: "bg-ac-gray-80 text-ac-white",
-  error: "bg-ac-red-50 text-ac-white",
-  success: "bg-ac-blue-50 text-ac-white",
-  info: "bg-ac-primary-10 text-ac-gray-90 border border-ac-primary-20",
-  warning: "bg-ac-orange-10 text-ac-gray-90 border border-ac-orange-30"
+var variantBgClass = {
+  default: "bg-ac-orange-10",
+  error: "bg-ac-red-10",
+  success: "bg-ac-green-10",
+  info: "bg-ac-blue-10",
+  warning: "bg-ac-orange-20"
+};
+var variantTextClass = {
+  default: "text-ac-gray-90",
+  error: "text-ac-gray-90",
+  success: "text-ac-gray-90",
+  info: "text-ac-gray-90",
+  warning: "text-ac-gray-90"
+};
+var sizeContainerClass = {
+  sm: "h-8 px-2",
+  md: "h-9 px-2",
+  lg: "h-11 px-3"
+};
+var sizeTextClass = {
+  sm: "text-xs",
+  md: "text-xs",
+  lg: "text-sm"
+};
+var sizeCollapsedClass = {
+  sm: "w-8 h-8",
+  md: "w-9 h-9",
+  lg: "w-11 h-11"
+};
+var variantIconClass = {
+  default: "[&_svg]:text-ac-orange-50",
+  error: "[&_svg]:text-ac-red-50",
+  success: "[&_svg]:text-ac-green-50",
+  info: "[&_svg]:text-ac-blue-50",
+  warning: "[&_svg]:text-ac-orange-50"
 };
 var SnackbarContext = React19.createContext(null);
 function useSnackbar() {
@@ -2474,76 +2721,111 @@ function SnackbarItem({
   item,
   onDismiss
 }) {
-  const { id, message, variant = "default", leftItem, rightItem, onAction, actionLabel } = item;
+  const {
+    id,
+    message,
+    variant = "default",
+    leftItem,
+    rightItem,
+    iconColorClass,
+    bgColorClass,
+    textColorClass,
+    onAction
+  } = item;
   const renderRight = () => {
     if (!rightItem) return null;
-    if (rightItem === "close") {
-      return /* @__PURE__ */ jsx21(
-        "button",
-        {
-          type: "button",
-          onClick: () => onDismiss(id),
-          "aria-label": "\uB2EB\uAE30",
-          className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
-          children: /* @__PURE__ */ jsx21(X2, { className: "w-4 h-4" })
-        }
-      );
-    }
-    if (rightItem === "chevron") {
-      return /* @__PURE__ */ jsx21(
-        "button",
-        {
-          type: "button",
-          onClick: onAction,
-          "aria-label": "\uB354\uBCF4\uAE30",
-          className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
-          children: /* @__PURE__ */ jsx21(ChevronRight2, { className: "w-4 h-4" })
-        }
-      );
-    }
-    if (rightItem === "check") {
-      return /* @__PURE__ */ jsx21(Check2, { className: "shrink-0 w-4 h-4 opacity-80" });
-    }
-    if (actionLabel) {
-      return /* @__PURE__ */ jsx21(
-        "button",
-        {
-          type: "button",
-          onClick: onAction,
-          className: "shrink-0 text-xs font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity whitespace-nowrap",
-          children: actionLabel
-        }
-      );
-    }
-    return /* @__PURE__ */ jsx21("span", { className: "shrink-0", children: rightItem });
+    if (rightItem === "close") return /* @__PURE__ */ jsx21(
+      "button",
+      {
+        type: "button",
+        onClick: () => onDismiss(id),
+        "aria-label": "\uB2EB\uAE30",
+        className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
+        children: /* @__PURE__ */ jsx21(X2, { className: "w-4 h-4" })
+      }
+    );
+    if (rightItem === "chevron") return /* @__PURE__ */ jsx21(
+      "button",
+      {
+        type: "button",
+        onClick: onAction,
+        "aria-label": "\uB354\uBCF4\uAE30",
+        className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
+        children: /* @__PURE__ */ jsx21(ChevronRight2, { className: "w-4 h-4" })
+      }
+    );
+    if (rightItem === "check") return /* @__PURE__ */ jsx21(Check2, { className: "shrink-0 w-4 h-4 opacity-80" });
+    return /* @__PURE__ */ jsx21("span", { className: "shrink-0 flex items-center", children: rightItem });
   };
   return /* @__PURE__ */ jsxs18(
     "div",
     {
       role: "status",
       className: cn(
-        "flex items-center gap-3 w-full",
-        "px-4 py-3 rounded-lg shadow-md",
+        "flex items-center gap-1 w-full",
+        "p-2 rounded-xl",
         "animate-slide-up",
-        variantClass[variant]
+        bgColorClass ?? variantBgClass[variant],
+        textColorClass ?? variantTextClass[variant]
       ),
       children: [
-        leftItem && /* @__PURE__ */ jsx21("span", { className: "shrink-0 flex items-center justify-center w-5 h-5", children: leftItem }),
-        /* @__PURE__ */ jsx21("span", { className: "flex-1 text-sm leading-snug min-w-0", children: message }),
+        leftItem && /* @__PURE__ */ jsx21("span", { className: cn("shrink-0 flex items-center justify-center", iconColorClass ?? variantIconClass[variant]), children: leftItem }),
+        /* @__PURE__ */ jsx21("span", { className: "flex-1 text-xs font-medium leading-snug min-w-0", children: message }),
         renderRight()
       ]
     }
   );
 }
 var Snackbar = React19.forwardRef(
-  ({ className, message, variant = "default", leftItem, rightItem, onClose, onAction, actionLabel, ...props }, ref) => {
+  ({
+    className,
+    message,
+    variant = "default",
+    size = "md",
+    leftItem,
+    rightItem,
+    iconColorClass,
+    bgColorClass,
+    textColorClass,
+    closeMode = "dismiss",
+    onClose,
+    onAction,
+    ...props
+  }, ref) => {
+    const [visible, setVisible] = React19.useState(true);
+    const [collapsed, setCollapsed] = React19.useState(false);
+    const handleClose = () => {
+      if (closeMode === "hide-right") {
+        setCollapsed(true);
+      } else {
+        setVisible(false);
+      }
+      onClose?.();
+    };
+    if (!visible) return null;
+    if (collapsed) {
+      return /* @__PURE__ */ jsx21(
+        "div",
+        {
+          role: "status",
+          onClick: () => setCollapsed(false),
+          className: cn(
+            "inline-flex items-center justify-center rounded-full cursor-pointer",
+            "transition-colors hover:opacity-80",
+            sizeCollapsedClass[size],
+            bgColorClass ?? variantBgClass[variant]
+          ),
+          children: /* @__PURE__ */ jsx21("span", { className: cn("flex items-center justify-center", iconColorClass ?? variantIconClass[variant]), children: leftItem })
+        }
+      );
+    }
     const renderRight = () => {
       if (!rightItem) return null;
       if (rightItem === "close") return /* @__PURE__ */ jsx21(
         "button",
         {
           type: "button",
-          onClick: onClose,
+          onClick: handleClose,
           "aria-label": "\uB2EB\uAE30",
           className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
           children: /* @__PURE__ */ jsx21(X2, { className: "w-4 h-4" })
@@ -2560,16 +2842,7 @@ var Snackbar = React19.forwardRef(
         }
       );
       if (rightItem === "check") return /* @__PURE__ */ jsx21(Check2, { className: "shrink-0 w-4 h-4 opacity-80" });
-      if (actionLabel) return /* @__PURE__ */ jsx21(
-        "button",
-        {
-          type: "button",
-          onClick: onAction,
-          className: "shrink-0 text-xs font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity whitespace-nowrap",
-          children: actionLabel
-        }
-      );
-      return /* @__PURE__ */ jsx21("span", { className: "shrink-0", children: rightItem });
+      return /* @__PURE__ */ jsx21("span", { className: "shrink-0 flex items-center", children: rightItem });
     };
     return /* @__PURE__ */ jsxs18(
       "div",
@@ -2577,15 +2850,17 @@ var Snackbar = React19.forwardRef(
         ref,
         role: "status",
         className: cn(
-          "flex items-center gap-3 w-full",
-          "px-4 py-3 rounded-lg shadow-md",
-          variantClass[variant],
+          "flex items-center gap-1 w-full",
+          "rounded-xl",
+          sizeContainerClass[size],
+          bgColorClass ?? variantBgClass[variant],
+          textColorClass ?? variantTextClass[variant],
           className
         ),
         ...props,
         children: [
-          leftItem && /* @__PURE__ */ jsx21("span", { className: "shrink-0 flex items-center justify-center w-5 h-5", children: leftItem }),
-          /* @__PURE__ */ jsx21("span", { className: "flex-1 text-sm leading-snug min-w-0", children: message }),
+          leftItem && /* @__PURE__ */ jsx21("span", { className: cn("shrink-0 flex items-center justify-center", iconColorClass ?? variantIconClass[variant]), children: leftItem }),
+          /* @__PURE__ */ jsx21("span", { className: cn("flex-1 font-medium leading-snug min-w-0", sizeTextClass[size]), children: message }),
           renderRight()
         ]
       }
@@ -2620,7 +2895,7 @@ var Pagination = React20.forwardRef(
     onPageChange,
     type = "default",
     disabled = false,
-    activeColor,
+    activeColorClass,
     showPageSize = false,
     pageSizeOptions = [10, 20, 40, 100],
     pageSize: controlledPageSize,
@@ -2642,8 +2917,8 @@ var Pagination = React20.forwardRef(
       if (!controlled) setInternalPage(next);
       onPageChange?.(next);
     };
-    const handlePageSizeChange = (e) => {
-      const size = Number(e.target.value);
+    const handlePageSizeChange = (val) => {
+      const size = Number(val);
       if (!pageSizeControlled) setInternalPageSize(size);
       onPageSizeChange?.(size);
       goTo(1);
@@ -2655,29 +2930,69 @@ var Pagination = React20.forwardRef(
         setJumperValue("");
       }
     };
-    const btnBase = cn(
-      "inline-flex items-center justify-center h-8 min-w-8 px-1 rounded-md text-sm",
+    const pageBtn = (active) => cn(
+      "inline-flex items-center justify-center h-9 w-9 rounded-md text-xs font-bold",
       "transition-colors duration-fast select-none",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      active ? "text-ac-white" : "text-ac-gray-80 hover:text-ac-primary-50",
       disabled && "opacity-40 pointer-events-none"
     );
-    const navBtn = cn(btnBase, "gap-1 px-2 text-foreground border border-border hover:bg-ac-gray-20 disabled:opacity-40");
-    const pageBtn = (active) => cn(
-      btnBase,
-      active ? "font-semibold text-ac-white" : "text-foreground hover:bg-ac-gray-20 hover:text-ac-primary-50"
-    );
     if (type === "simple") {
-      return /* @__PURE__ */ jsxs19("div", { ref, role: "navigation", "aria-label": "\uD398\uC774\uC9C0\uB124\uC774\uC158", className: cn("flex items-center gap-1", className), ...props, children: [
-        /* @__PURE__ */ jsx22("button", { onClick: () => goTo(page - 1), disabled: disabled || page <= 1, className: navBtn, "aria-label": "\uC774\uC804 \uD398\uC774\uC9C0", children: /* @__PURE__ */ jsx22(ChevronLeft2, { className: "w-4 h-4" }) }),
-        /* @__PURE__ */ jsxs19("span", { className: "inline-flex items-center gap-1 px-2 text-sm text-foreground tabular-nums", children: [
-          /* @__PURE__ */ jsx22("span", { className: "font-semibold", children: page }),
-          /* @__PURE__ */ jsxs19("span", { className: "text-muted-foreground", children: [
-            "/ ",
-            total
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx22("button", { onClick: () => goTo(page + 1), disabled: disabled || page >= total, className: navBtn, "aria-label": "\uB2E4\uC74C \uD398\uC774\uC9C0", children: /* @__PURE__ */ jsx22(ChevronRight3, { className: "w-4 h-4" }) })
-      ] });
+      return /* @__PURE__ */ jsxs19(
+        "div",
+        {
+          ref,
+          role: "navigation",
+          "aria-label": "\uD398\uC774\uC9C0\uB124\uC774\uC158",
+          className: cn("flex items-center gap-3", className),
+          ...props,
+          children: [
+            /* @__PURE__ */ jsx22(
+              Button,
+              {
+                variant: "tertiary",
+                size: "icon-sm",
+                onClick: () => goTo(page - 1),
+                disabled: disabled || page <= 1,
+                "aria-label": "\uC774\uC804 \uD398\uC774\uC9C0",
+                children: /* @__PURE__ */ jsx22(ChevronLeft2, {})
+              }
+            ),
+            /* @__PURE__ */ jsxs19("div", { className: "flex items-center gap-1", children: [
+              /* @__PURE__ */ jsx22("div", { className: "w-10", children: /* @__PURE__ */ jsx22(
+                TextInput,
+                {
+                  type: "number",
+                  size: "md",
+                  value: String(page),
+                  onChange: (e) => {
+                    const v = Number(e.target.value);
+                    if (!isNaN(v) && v >= 1 && v <= total) goTo(v);
+                  },
+                  disabled,
+                  className: "text-center tabular-nums [&_input]:appearance-none [&_input]:[appearance:textfield] [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:appearance-none",
+                  "aria-label": "\uD604\uC7AC \uD398\uC774\uC9C0"
+                }
+              ) }),
+              /* @__PURE__ */ jsxs19("span", { className: "text-sm text-ac-gray-60", children: [
+                "/ ",
+                total
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx22(
+              Button,
+              {
+                variant: "tertiary",
+                size: "icon-sm",
+                onClick: () => goTo(page + 1),
+                disabled: disabled || page >= total,
+                "aria-label": "\uB2E4\uC74C \uD398\uC774\uC9C0",
+                children: /* @__PURE__ */ jsx22(ChevronRight3, {})
+              }
+            )
+          ]
+        }
+      );
     }
     const pages = getPageNumbers(page, total);
     return /* @__PURE__ */ jsxs19(
@@ -2686,90 +3001,79 @@ var Pagination = React20.forwardRef(
         ref,
         role: "navigation",
         "aria-label": "\uD398\uC774\uC9C0\uB124\uC774\uC158",
-        className: cn("flex items-center gap-1 flex-wrap", className),
+        className: cn("flex items-center gap-2 flex-wrap", className),
         ...props,
         children: [
-          /* @__PURE__ */ jsxs19(
-            "button",
+          /* @__PURE__ */ jsx22(
+            Button,
             {
+              variant: "tertiary",
+              size: "sm",
               onClick: () => goTo(page - 1),
               disabled: disabled || page <= 1,
-              className: navBtn,
+              leftIcon: /* @__PURE__ */ jsx22(ChevronLeft2, {}),
               "aria-label": "\uC774\uC804 \uD398\uC774\uC9C0",
-              children: [
-                /* @__PURE__ */ jsx22(ChevronLeft2, { className: "w-4 h-4" }),
-                /* @__PURE__ */ jsx22("span", { children: "\uC774\uC804" })
-              ]
+              children: "\uC774\uC804"
             }
           ),
           pages.map(
-            (p, i) => p === "..." ? /* @__PURE__ */ jsx22("span", { className: "w-8 text-center text-sm text-muted-foreground select-none", children: "\u2026" }, `ellipsis-${i}`) : /* @__PURE__ */ jsx22(
+            (p, i) => p === "..." ? /* @__PURE__ */ jsx22(
+              "span",
+              {
+                className: "w-9 text-center text-xs text-foreground select-none",
+                children: "\u2026"
+              },
+              `ellipsis-${i}`
+            ) : /* @__PURE__ */ jsx22(
               "button",
               {
                 onClick: () => goTo(p),
                 disabled,
                 "aria-current": p === page ? "page" : void 0,
-                className: pageBtn(p === page),
-                style: p === page ? {
-                  backgroundColor: activeColor ?? "#FF6300"
-                  /* ac-primary-50 */
-                } : void 0,
+                className: cn(pageBtn(p === page), p === page && (activeColorClass ?? "bg-ac-primary-50")),
+                style: void 0,
                 children: p
               },
               p
             )
           ),
-          /* @__PURE__ */ jsxs19(
-            "button",
+          /* @__PURE__ */ jsx22(
+            Button,
             {
+              variant: "tertiary",
+              size: "sm",
               onClick: () => goTo(page + 1),
               disabled: disabled || page >= total,
-              className: navBtn,
+              rightIcon: /* @__PURE__ */ jsx22(ChevronRight3, {}),
               "aria-label": "\uB2E4\uC74C \uD398\uC774\uC9C0",
-              children: [
-                /* @__PURE__ */ jsx22("span", { children: "\uB2E4\uC74C" }),
-                /* @__PURE__ */ jsx22(ChevronRight3, { className: "w-4 h-4" })
-              ]
+              children: "\uB2E4\uC74C"
             }
           ),
-          showPageSize && /* @__PURE__ */ jsx22(
-            "select",
+          showPageSize && /* @__PURE__ */ jsx22("div", { className: "w-28", children: /* @__PURE__ */ jsx22(
+            Select,
             {
-              value: pageSize,
-              onChange: handlePageSizeChange,
+              size: "md",
+              value: String(pageSize),
+              onValueChange: handlePageSizeChange,
               disabled,
-              className: cn(
-                "h-8 px-2 rounded-md border border-border text-sm bg-background text-foreground",
-                "focus:outline-none focus:ring-2 focus:ring-ring",
-                disabled && "opacity-40 pointer-events-none"
-              ),
-              "aria-label": "\uD398\uC774\uC9C0\uB2F9 \uD56D\uBAA9 \uC218",
-              children: pageSizeOptions.map((s) => /* @__PURE__ */ jsxs19("option", { value: s, children: [
-                s,
-                " / page"
-              ] }, s))
+              options: pageSizeOptions.map((s) => ({ label: `${s} / page`, value: String(s) }))
             }
-          ),
+          ) }),
           showJumper && /* @__PURE__ */ jsxs19("div", { className: "flex items-center gap-1.5 ml-1", children: [
             /* @__PURE__ */ jsx22("span", { className: "text-sm text-foreground", children: "Go to" }),
-            /* @__PURE__ */ jsx22(
-              "input",
+            /* @__PURE__ */ jsx22("div", { className: "w-16", children: /* @__PURE__ */ jsx22(
+              TextInput,
               {
                 type: "number",
-                min: 1,
-                max: total,
+                size: "md",
                 value: jumperValue,
                 onChange: (e) => setJumperValue(e.target.value),
                 onKeyDown: handleJumper,
                 disabled,
-                className: cn(
-                  "w-12 h-8 px-2 rounded-md border border-border text-sm bg-background text-foreground text-center tabular-nums",
-                  "focus:outline-none focus:ring-2 focus:ring-ring",
-                  disabled && "opacity-40 pointer-events-none"
-                ),
+                className: "text-center tabular-nums [&_input]:appearance-none [&_input]:[appearance:textfield] [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:appearance-none",
                 "aria-label": "\uC774\uB3D9\uD560 \uD398\uC774\uC9C0 \uBC88\uD638"
               }
-            )
+            ) })
           ] })
         ]
       }
@@ -3459,7 +3763,7 @@ DialogClose.displayName = "DialogClose";
 
 // src/components/Accordion/index.tsx
 import * as React24 from "react";
-import { Plus, Minus, ChevronDown as ChevronDown3 } from "lucide-react";
+import { Plus, Minus, ChevronDown as ChevronDown4 } from "lucide-react";
 import { jsx as jsx26, jsxs as jsxs23 } from "react/jsx-runtime";
 var AccordionContext = React24.createContext(null);
 var AccordionItemContext = React24.createContext(null);
@@ -3542,7 +3846,7 @@ var AccordionTrigger = React24.forwardRef(
         children: [
           /* @__PURE__ */ jsx26("span", { className: "text-left text-sm font-medium text-foreground", children }),
           iconType === "plus" ? /* @__PURE__ */ jsx26("span", { className: "shrink-0 ml-4 text-muted-foreground", children: isOpen ? /* @__PURE__ */ jsx26(Minus, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx26(Plus, { className: "w-4 h-4" }) }) : /* @__PURE__ */ jsx26(
-            ChevronDown3,
+            ChevronDown4,
             {
               className: cn(
                 "h-4 w-4 shrink-0 ml-4 text-muted-foreground transition-transform duration-slow",
@@ -3594,7 +3898,7 @@ AccordionContent.displayName = "AccordionContent";
 
 // src/components/Carousel/index.tsx
 import * as React25 from "react";
-import { ChevronLeft as ChevronLeft3, ChevronRight as ChevronRight5, ChevronUp as ChevronUp3, ChevronDown as ChevronDown4 } from "lucide-react";
+import { ChevronLeft as ChevronLeft3, ChevronRight as ChevronRight5, ChevronUp as ChevronUp3, ChevronDown as ChevronDown5 } from "lucide-react";
 import { jsx as jsx27, jsxs as jsxs24 } from "react/jsx-runtime";
 var CarouselContext = React25.createContext(null);
 function useCarousel() {
@@ -3739,7 +4043,7 @@ CarouselPrevious.displayName = "CarouselPrevious";
 var CarouselNext = React25.forwardRef(
   ({ className, navStyle = "default", ...props }, ref) => {
     const { next, current, pageCount, orientation, loop } = useCarousel();
-    const Icon = orientation === "horizontal" ? ChevronRight5 : ChevronDown4;
+    const Icon = orientation === "horizontal" ? ChevronRight5 : ChevronDown5;
     const isDisabled = !loop && current >= pageCount - 1;
     return /* @__PURE__ */ jsx27(
       "button",

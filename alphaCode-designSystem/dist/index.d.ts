@@ -9,8 +9,8 @@ export { ColorToken, RadiusToken, SpacingToken, borderRadius, breakpoints, color
 export * from 'lucide-react';
 
 declare const buttonVariants: (props?: ({
-    variant?: "link" | "primary" | "secondary" | "tertiary" | "icon" | null | undefined;
-    size?: "xs" | "sm" | "lg" | "xl" | "md" | "icon-xl" | "icon-lg" | "icon-md" | "icon-sm" | "icon-xs" | null | undefined;
+    variant?: "primary" | "secondary" | "tertiary" | "link" | "icon" | null | undefined;
+    size?: "xl" | "lg" | "md" | "sm" | "xs" | "icon-xl" | "icon-lg" | "icon-md" | "icon-sm" | "icon-xs" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
@@ -29,7 +29,7 @@ declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAtt
 
 declare const buttonGroupVariants: (props?: ({
     direction?: "horizontal" | "vertical" | null | undefined;
-    gap?: "sm" | "md" | null | undefined;
+    gap?: "md" | "sm" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof buttonGroupVariants> {
     direction?: "horizontal" | "vertical";
@@ -81,8 +81,8 @@ interface FABProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, Varian
 declare const FAB: React.ForwardRefExoticComponent<FABProps & React.RefAttributes<HTMLButtonElement>>;
 
 declare const badgeVariants: (props?: ({
-    variant?: "primary" | "success" | "warning" | "complete" | "fail" | "default" | null | undefined;
-    size?: "xs" | "sm" | "lg" | "md" | null | undefined;
+    variant?: "primary" | "complete" | "success" | "warning" | "fail" | "default" | null | undefined;
+    size?: "lg" | "md" | "sm" | "xs" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
     /** 좌측 아이콘 (선택) */
@@ -203,7 +203,7 @@ interface DividerProps extends React.HTMLAttributes<HTMLDivElement>, VariantProp
 declare function Divider({ className, orientation, variant, inset, ...props }: DividerProps): react_jsx_runtime.JSX.Element;
 
 declare const checkboxVariants: (props?: ({
-    size?: "lg" | "xl" | "md" | null | undefined;
+    size?: "xl" | "lg" | "md" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">, VariantProps<typeof checkboxVariants> {
     label?: string;
@@ -224,7 +224,7 @@ interface CheckboxGroupProps extends React.HTMLAttributes<HTMLFieldSetElement> {
 declare function CheckboxGroup({ title, direction, className, children, ...props }: CheckboxGroupProps): react_jsx_runtime.JSX.Element;
 
 declare const radioVariants: (props?: ({
-    size?: "lg" | "xl" | "md" | null | undefined;
+    size?: "xl" | "lg" | "md" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">, VariantProps<typeof radioVariants> {
     label?: string;
@@ -272,7 +272,7 @@ declare function Breadcrumbs({ className, items, separator, maxItems, showHomeIc
 
 declare const avatarVariants: (props?: ({
     shape?: "circle" | "square" | null | undefined;
-    size?: "xs" | "sm" | "lg" | "xl" | "2xl" | "md" | null | undefined;
+    size?: "xl" | "lg" | "md" | "sm" | "xs" | "2xl" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface AvatarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children">, VariantProps<typeof avatarVariants> {
     /** 이미지 URL */
@@ -304,10 +304,15 @@ interface DatePickerProps {
     placeholder?: string;
     dateFormat?: string;
     disabled?: boolean;
+    minDate?: Date;
+    maxDate?: Date;
+    offsetMonths?: number;
+    disabledDates?: Date[];
+    weekendColor?: boolean;
     className?: string;
     id?: string;
 }
-declare function DatePicker({ value, defaultValue, onChange, size, state, label, helperText, errorMessage, placeholder, dateFormat, disabled, className, id, }: DatePickerProps): react_jsx_runtime.JSX.Element;
+declare function DatePicker({ value, defaultValue, onChange, size, state, label, helperText, errorMessage, placeholder, dateFormat, disabled, minDate, maxDate, offsetMonths, disabledDates, weekendColor, className, id, }: DatePickerProps): react_jsx_runtime.JSX.Element;
 interface DateRangePickerProps {
     value?: DateRange;
     defaultValue?: DateRange;
@@ -321,10 +326,16 @@ interface DateRangePickerProps {
     endPlaceholder?: string;
     dateFormat?: string;
     disabled?: boolean;
+    twoMonths?: boolean;
+    minDate?: Date;
+    maxDate?: Date;
+    offsetMonths?: number;
+    disabledDates?: Date[];
+    weekendColor?: boolean;
     className?: string;
     id?: string;
 }
-declare function DateRangePicker({ value, defaultValue, onChange, size, state, label, helperText, errorMessage, startPlaceholder, endPlaceholder, dateFormat, disabled, className, id, }: DateRangePickerProps): react_jsx_runtime.JSX.Element;
+declare function DateRangePicker({ value, defaultValue, onChange, size, state, label, helperText, errorMessage, startPlaceholder, endPlaceholder, dateFormat, disabled, twoMonths, minDate, maxDate, offsetMonths, disabledDates, weekendColor, className, id, }: DateRangePickerProps): react_jsx_runtime.JSX.Element;
 
 interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "prefix"> {
     size?: "sm" | "md" | "lg";
@@ -358,7 +369,7 @@ interface SelectOptionGroup {
     options: SelectOption[];
 }
 declare const selectVariants: (props?: ({
-    size?: "sm" | "lg" | "md" | null | undefined;
+    size?: "lg" | "md" | "sm" | null | undefined;
     state?: "complete" | "default" | "error" | "disable" | "focus" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface SelectProps extends VariantProps<typeof selectVariants> {
@@ -378,7 +389,7 @@ interface SelectProps extends VariantProps<typeof selectVariants> {
 declare function Select({ size, state, options, groups, placeholder, value, defaultValue, onValueChange, disabled, label, helperText, errorMessage, className, id, }: SelectProps): react_jsx_runtime.JSX.Element;
 
 declare const fileInputVariants: (props?: ({
-    size?: "sm" | "lg" | "md" | null | undefined;
+    size?: "lg" | "md" | "sm" | null | undefined;
     state?: "complete" | "default" | "error" | "disable" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface FileInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">, VariantProps<typeof fileInputVariants> {
@@ -496,16 +507,22 @@ declare const TabContent: React.ForwardRefExoticComponent<TabContentProps & Reac
 
 type SnackbarVariant = "default" | "error" | "success" | "info" | "warning";
 type SnackbarPosition = "top" | "bottom";
+type SnackbarSize = "sm" | "md" | "lg";
 interface SnackbarItem {
     id: string;
     message: React.ReactNode;
     variant?: SnackbarVariant;
     /** 좌측 아이콘 또는 아바타 */
     leftItem?: React.ReactNode;
-    /** 우측: close(X) / action(텍스트 버튼) / chevron / check */
+    /** 우측: close / chevron / check / ReactNode (Button 등) */
     rightItem?: "close" | "chevron" | "check" | React.ReactNode;
+    /** 아이콘 색상 override — Tailwind text 클래스. 미지정 시 variant 기본색 적용 */
+    iconColorClass?: string;
+    /** 배경색 override — Tailwind bg 클래스 (예: "bg-ac-blue-10") */
+    bgColorClass?: string;
+    /** 텍스트 색상 override — Tailwind text 클래스 (예: "text-ac-white") */
+    textColorClass?: string;
     onAction?: () => void;
-    actionLabel?: string;
     duration?: number;
 }
 interface SnackbarContextValue {
@@ -524,11 +541,26 @@ declare function SnackbarProvider({ children, position, maxCount, defaultDuratio
 interface SnackbarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "color"> {
     message: React.ReactNode;
     variant?: SnackbarVariant;
+    /** 좌측 아이콘 또는 아바타 */
     leftItem?: React.ReactNode;
+    /** 우측: close / chevron / check / ReactNode (Button 등) */
     rightItem?: "close" | "chevron" | "check" | React.ReactNode;
+    /** 아이콘 색상 override — Tailwind text 클래스. 미지정 시 variant 기본색 적용 */
+    iconColorClass?: string;
+    /** 배경색 override — Tailwind bg 클래스 (예: "bg-ac-blue-10") */
+    bgColorClass?: string;
+    /** 텍스트 색상 override — Tailwind text 클래스 (예: "text-ac-white") */
+    textColorClass?: string;
+    /** 스낵바 크기 */
+    size?: SnackbarSize;
+    /**
+     * close 버튼 동작 방식
+     * - "dismiss": 스낵바 전체 제거 (기본값)
+     * - "hide-right": 오른쪽 아이템만 제거, 스낵바는 유지
+     */
+    closeMode?: "dismiss" | "hide-right";
     onClose?: () => void;
     onAction?: () => void;
-    actionLabel?: string;
 }
 declare const Snackbar: React.ForwardRefExoticComponent<SnackbarProps & React.RefAttributes<HTMLDivElement>>;
 
@@ -540,12 +572,12 @@ interface PaginationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "on
     page?: number;
     defaultPage?: number;
     onPageChange?: (page: number) => void;
-    /** simple: 이전/현재/다음만 표시 */
+    /** simple: 이전/다음 아이콘만, 중앙에 input 표시 */
     type?: PaginationType;
     /** 비활성화 */
     disabled?: boolean;
-    /** 활성 페이지 버튼 색상 (기본 ac-primary-50) */
-    activeColor?: string;
+    /** 활성 페이지 버튼 배경 색상 — Tailwind bg 클래스 (예: "bg-ac-gray-80", 기본: "bg-ac-primary-50") */
+    activeColorClass?: string;
     /** 페이지당 항목 수 선택 표시 */
     showPageSize?: boolean;
     pageSizeOptions?: number[];
