@@ -7,6 +7,7 @@ import { Divider } from "@/components/Divider";
 import { Checkbox } from "@/components/Input/Checkbox";
 import { Radio } from "@/components/Input/Radio";
 import { Switch } from "@/components/Input/Switch";
+import { Avatar, type AvatarProps } from "@/components/Avatar";
 
 /* ══════════════════════════════════════════════════════════════
    Card (Root)
@@ -31,7 +32,8 @@ const cardVariants = cva(
       interactive: {
         true:  [
           "cursor-pointer",
-          "active:border active:border-ac-primary-50",
+          "hover:shadow-lg hover:-translate-y-0.5",
+          "active:ring-1 active:ring-ac-primary-50",
         ],
         false: "",
       },
@@ -122,7 +124,7 @@ export type CardHeaderProps =
     /** 이미지 URL — image 타입 */
     imageSrc?: string;
     imageAlt?: string;
-    /** 아바타 요소 — avatar 타입 */
+    /** 아바타 영역 콘텐츠 — Avatar 컴포넌트 또는 커스텀 ReactNode */
     avatar?: React.ReactNode;
     /** 제목 */
     title?: React.ReactNode;
@@ -142,26 +144,28 @@ function CardHeaderControl(props: CardHeaderControl) {
 
   if (props.control === "checkbox") {
     return (
-      <Checkbox
-        size="lg"
-        checked={props.checked}
-        defaultChecked={props.defaultChecked}
-        onChange={(e) => props.onCheckedChange?.(e.target.checked)}
-        className="mt-0.5"
-      />
+      <div className="mt-0.5">
+        <Checkbox
+          size="lg"
+          checked={props.checked}
+          defaultChecked={props.defaultChecked}
+          onChange={(e) => props.onCheckedChange?.(e.target.checked)}
+        />
+      </div>
     );
   }
 
   if (props.control === "radio") {
     return (
-      <Radio
-        size="lg"
-        checked={props.checked}
-        onChange={props.onChange}
-        name={props.name}
-        value={props.value}
-        className="mt-0.5"
-      />
+      <div className="mt-0.5">
+        <Radio
+          size="lg"
+          checked={props.checked}
+          onChange={props.onChange}
+          name={props.name}
+          value={props.value}
+        />
+      </div>
     );
   }
 
@@ -342,7 +346,7 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
-  ({ className, divider = true, children, ...props }, ref) => (
+  ({ className, divider = false, children, ...props }, ref) => (
     <>
       {divider && <Divider />}
       <div
@@ -363,7 +367,7 @@ CardFooter.displayName = "CardFooter";
 
 /* ── CardFooterUser ───────────────────────────────────────── */
 export interface CardFooterUserProps extends React.HTMLAttributes<HTMLDivElement> {
-  avatar?: React.ReactNode;
+  avatar?: Pick<AvatarProps, "src" | "name" | "fallback" | "size" | "shape">;
   name?: string;
   sub?: string;
   action?: React.ReactNode;
@@ -372,7 +376,7 @@ export interface CardFooterUserProps extends React.HTMLAttributes<HTMLDivElement
 const CardFooterUser = React.forwardRef<HTMLDivElement, CardFooterUserProps>(
   ({ className, avatar, name, sub, action, ...props }, ref) => (
     <div ref={ref} className={cn("flex items-center gap-2 w-full", className)} {...props}>
-      {avatar && <div className="shrink-0">{avatar}</div>}
+      {avatar && <Avatar size="md" {...avatar} />}
       <div className="flex-1 min-w-0">
         {name && <p className="text-xs font-medium text-foreground line-clamp-1">{name}</p>}
         {sub  && <p className="text-xs text-muted-foreground line-clamp-1">{sub}</p>}
@@ -435,7 +439,7 @@ const CardFooterButtons = React.forwardRef<HTMLDivElement, CardFooterButtonsProp
       onPrimary,
       secondaryLabel,
       onSecondary,
-      divider = true,
+      divider = false,
       ...props
     },
     ref
