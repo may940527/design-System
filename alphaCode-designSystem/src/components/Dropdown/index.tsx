@@ -5,6 +5,7 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Checkbox } from "@/components/Input/Checkbox";
 import { Radio } from "@/components/Input/Radio";
+import { Avatar } from "@/components/Avatar";
 
 /* ══════════════════════════════════════════════════════════════
    Types
@@ -22,6 +23,7 @@ interface DropdownContextValue {
   triggerRef: React.RefObject<HTMLElement>;
   side: DropdownSide;
   align: DropdownAlign;
+  anchorPoint: { x: number; y: number } | null;
 }
 
 const DropdownContext = React.createContext<DropdownContextValue | null>(null);
@@ -47,6 +49,8 @@ export interface DropdownProps {
   onOpenChange?: (open: boolean) => void;
   side?: DropdownSide;
   align?: DropdownAlign;
+  /** 드롭다운 열림 방식: 클릭, 호버, 또는 우클릭 @default "click" */
+  trigger?: "click" | "hover" | "contextmenu";
   children: React.ReactNode;
 }
 
@@ -56,30 +60,36 @@ function Dropdown({
   onOpenChange,
   side = "bottom",
   align = "start",
+  trigger = "click",
   children,
 }: DropdownProps) {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
   const controlled = controlledOpen !== undefined;
   const open = controlled ? controlledOpen! : internalOpen;
   const triggerRef = React.useRef<HTMLElement>(null!);
+  const [anchorPoint, setAnchorPoint] = React.useState<{ x: number; y: number } | null>(null);
 
   const setOpen = React.useCallback((v: boolean) => {
     if (!controlled) setInternalOpen(v);
     onOpenChange?.(v);
   }, [controlled, onOpenChange]);
 
-  // 외부 클릭 닫기
+  // 외부 클릭 닫기 (click / contextmenu 모드)
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
-    if (!open) return;
+    if ((trigger !== "click" && trigger !== "contextmenu") || !open) return;
     const handler = (e: MouseEvent) => {
+      if (trigger === "contextmenu") {
+        setOpen(false);
+        return;
+      }
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open, setOpen]);
+    document.addEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+    return () => document.removeEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+  }, [trigger, open, setOpen]);
 
   // ESC 닫기
   React.useEffect(() => {
@@ -89,9 +99,22 @@ function Dropdown({
     return () => document.removeEventListener("keydown", handler);
   }, [open, setOpen]);
 
+  const hoverProps = trigger === "hover" ? {
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false),
+  } : {};
+
+  const contextMenuProps = trigger === "contextmenu" ? {
+    onContextMenu: (e: React.MouseEvent) => {
+      e.preventDefault();
+      setAnchorPoint({ x: e.clientX, y: e.clientY });
+      setOpen(true);
+    },
+  } : {};
+
   return (
-    <DropdownContext.Provider value={{ open, setOpen, triggerRef, side, align }}>
-      <div ref={containerRef} className="relative inline-block">
+    <DropdownContext.Provider value={{ open, setOpen, triggerRef, side, align, anchorPoint }}>
+      <div ref={containerRef} className="relative inline-block" {...hoverProps} {...contextMenuProps}>
         {children}
       </div>
     </DropdownContext.Provider>
@@ -176,28 +199,52 @@ export interface DropdownContentProps extends Omit<React.HTMLAttributes<HTMLDivE
 
 const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentProps>(
   ({ className, children, minWidth = 160, ...props }, ref) => {
-    const { open, side, align } = useDropdown();
+    const { open, side, align, anchorPoint } = useDropdown();
     const [openSub, setOpenSub] = React.useState<string | null>(null);
 
     if (!open) return null;
 
+    // contextmenu 모드: 커서 위치에 fixed로 렌더링
+    if (anchorPoint) {
+      return (
+        <SubDropdownContext.Provider value={{ openSub, setOpenSub }}>
+          <div
+            ref={ref}
+            role="menu"
+            aria-orientation="vertical"
+            className={cn(
+              "fixed z-dropdown",
+              "bg-background rounded-md border border-border shadow-md",
+              "py-1 animate-scale-in",
+              className
+            )}
+            style={{ minWidth, top: anchorPoint.y, left: anchorPoint.x }}
+            {...props}
+          >
+            {children}
+          </div>
+        </SubDropdownContext.Provider>
+      );
+    }
+
     return (
       <SubDropdownContext.Provider value={{ openSub, setOpenSub }}>
-        <div
-          ref={ref}
-          role="menu"
-          aria-orientation="vertical"
-          className={cn(
-            "absolute z-dropdown",
-            "bg-background rounded-md border border-border shadow-md",
-            "py-1 animate-scale-in",
-            getSideAlignClass(side, align),
-            className
-          )}
-          style={{ minWidth }}
-          {...props}
-        >
-          {children}
+        {/* 포지셔닝 wrapper: translate와 animate transform 충돌 방지 */}
+        <div className={cn("absolute z-dropdown", getSideAlignClass(side, align))}>
+          <div
+            ref={ref}
+            role="menu"
+            aria-orientation="vertical"
+            className={cn(
+              "bg-background rounded-md border border-border shadow-md",
+              "py-1 animate-scale-in",
+              className
+            )}
+            style={{ minWidth }}
+            {...props}
+          >
+            {children}
+          </div>
         </div>
       </SubDropdownContext.Provider>
     );
@@ -424,6 +471,97 @@ const DropdownRadioItem = React.forwardRef<HTMLDivElement, DropdownRadioItemProp
 DropdownRadioItem.displayName = "DropdownRadioItem";
 
 /* ══════════════════════════════════════════════════════════════
+   DropdownAvatarHeader — 비활성 아바타 헤더 (계정 정보 등)
+══════════════════════════════════════════════════════════════ */
+export interface DropdownAvatarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 아바타 이미지 URL */
+  src?: string;
+  /** 이름 (이니셜 생성에 사용) */
+  name?: string;
+  /** 주 텍스트 */
+  label: string;
+  /** 부 텍스트 (이메일 등) */
+  description?: string;
+}
+
+const DropdownAvatarHeader = React.forwardRef<HTMLDivElement, DropdownAvatarHeaderProps>(
+  ({ className, src, name, label, description, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-2 px-3 py-2 select-none", className)}
+      {...props}
+    >
+      <Avatar src={src} name={name} size="sm" />
+      <div className="flex flex-col min-w-0">
+        <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
+        {description && (
+          <span className="text-xs text-muted-foreground truncate leading-tight">{description}</span>
+        )}
+      </div>
+    </div>
+  )
+);
+DropdownAvatarHeader.displayName = "DropdownAvatarHeader";
+
+/* ══════════════════════════════════════════════════════════════
+   DropdownAvatarItem — 클릭 가능한 아바타 아이템 (유저 목록 등)
+══════════════════════════════════════════════════════════════ */
+export interface DropdownAvatarItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 아바타 이미지 URL */
+  src?: string;
+  /** 이름 (이니셜 생성에 사용) */
+  name?: string;
+  /** 주 텍스트 */
+  label: string;
+  /** 부 텍스트 (이메일 등) */
+  description?: string;
+  disabled?: boolean;
+  onSelect?: () => void;
+}
+
+const DropdownAvatarItem = React.forwardRef<HTMLDivElement, DropdownAvatarItemProps>(
+  ({ className, src, name, label, description, disabled, onSelect, onClick, ...props }, ref) => {
+    const { setOpen } = useDropdown();
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (disabled) return;
+      onClick?.(e);
+      onSelect?.();
+      setOpen(false);
+    };
+
+    return (
+      <div
+        ref={ref}
+        role="menuitem"
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : 0}
+        onClick={handleClick}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleClick(e as any); }}
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 w-full cursor-pointer select-none",
+          "transition-colors duration-fast",
+          disabled
+            ? "opacity-50 cursor-not-allowed pointer-events-none"
+            : "hover:bg-ac-gray-20",
+          className
+        )}
+        {...props}
+      >
+        <Avatar src={src} name={name} size="sm" />
+        <div className="flex flex-col min-w-0">
+          <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
+          {description && (
+            <span className="text-xs text-muted-foreground truncate leading-tight">{description}</span>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+DropdownAvatarItem.displayName = "DropdownAvatarItem";
+
+/* ══════════════════════════════════════════════════════════════
    DropdownSubMenu — Sub dropdown
 ══════════════════════════════════════════════════════════════ */
 export interface DropdownSubMenuProps {
@@ -497,5 +635,7 @@ export {
   DropdownCheckboxItem,
   DropdownRadioGroup,
   DropdownRadioItem,
+  DropdownAvatarHeader,
+  DropdownAvatarItem,
   DropdownSubMenu,
 };

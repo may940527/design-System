@@ -1,9 +1,35 @@
 import * as React from "react";
 import { cn } from "@/utils/cn";
+import { colors } from "@/tokens";
 
 /* ── Types ─────────────────────────────────────────────────── */
 export type TabSize    = "sm" | "md" | "lg";
 export type TabVariant = "fill" | "full";
+
+/* ── Color resolver ────────────────────────────────────────── */
+// hex/rgb 등 raw 값은 그대로, 토큰명(ac-primary-50)은 토큰 맵에서 hex로 변환
+const tokenMap: Record<string, Record<number, string>> = {
+  "ac-primary": colors.primary,
+  "ac-green":   colors.green,
+  "ac-blue":    colors.blue,
+  "ac-red":     colors.red,
+  "ac-orange":  colors.orange,
+  "ac-purple":  colors.purple,
+  "ac-gray":    colors.gray,
+};
+
+function resolveColor(color: string): string {
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  // "ac-primary-50" → palette: "ac-primary", shade: 50
+  const match = color.match(/^(ac-[a-z]+)-(\d+)$/);
+  if (match) {
+    const hex = tokenMap[match[1]]?.[Number(match[2])];
+    if (hex) return hex;
+  }
+  return color;
+}
 
 /* ── Size map ──────────────────────────────────────────────── */
 const tabSizeClass: Record<TabSize, string> = {
@@ -41,7 +67,11 @@ export interface TabsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "o
   /** fill: 콘텐츠 너비 / full: 균등 분할 */
   variant?: TabVariant;
   size?: TabSize;
-  /** 활성 탭 색상 (기본 ac-primary-50) */
+  /**
+   * 활성 탭 색상
+   * 토큰명(ac-blue-50) 또는 hex/rgb 값 모두 사용 가능
+   * @default "ac-primary-50"
+   */
   activeColor?: string;
 }
 
@@ -54,7 +84,7 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       onValueChange,
       variant = "fill",
       size = "md",
-      activeColor = "#FF6300", /* ac-primary-50 */
+      activeColor = "ac-primary-50",
       children,
       ...props
     },
@@ -139,7 +169,7 @@ const TabTrigger = React.forwardRef<HTMLButtonElement, TabTriggerProps>(
           disabled && "opacity-40 pointer-events-none",
           className
         )}
-        style={isActive ? { color: activeColor } : undefined}
+        style={isActive ? { color: resolveColor(activeColor) } : undefined}
         {...props}
       >
         {children}
@@ -147,7 +177,7 @@ const TabTrigger = React.forwardRef<HTMLButtonElement, TabTriggerProps>(
         {isActive && (
           <span
             className="absolute bottom-0 left-0 right-0 h-0.5"
-            style={{ backgroundColor: activeColor }}
+            style={{ backgroundColor: resolveColor(activeColor) }}
             aria-hidden="true"
           />
         )}

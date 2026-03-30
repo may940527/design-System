@@ -100,8 +100,8 @@ export { ProgressIndicator } from "@/components/ProgressIndicator";
 export type { ProgressIndicatorProps, ProgressType, ProgressLinearSize, ProgressCircularSize } from "@/components/ProgressIndicator";
 
 // ── Dropdown
-export { Dropdown, DropdownTrigger, DropdownContent, DropdownLabel, DropdownSeparator, DropdownItem, DropdownCheckboxItem, DropdownRadioGroup, DropdownRadioItem, DropdownSubMenu } from "@/components/Dropdown";
-export type { DropdownProps, DropdownTriggerProps, DropdownContentProps, DropdownItemProps, DropdownCheckboxItemProps, DropdownRadioGroupProps, DropdownRadioItemProps, DropdownSubMenuProps, DropdownAlign, DropdownSide } from "@/components/Dropdown";
+export { Dropdown, DropdownTrigger, DropdownContent, DropdownLabel, DropdownSeparator, DropdownItem, DropdownCheckboxItem, DropdownRadioGroup, DropdownRadioItem, DropdownAvatarHeader, DropdownAvatarItem, DropdownSubMenu } from "@/components/Dropdown";
+export type { DropdownProps, DropdownTriggerProps, DropdownContentProps, DropdownItemProps, DropdownCheckboxItemProps, DropdownRadioGroupProps, DropdownRadioItemProps, DropdownAvatarHeaderProps, DropdownAvatarItemProps, DropdownSubMenuProps, DropdownAlign, DropdownSide } from "@/components/Dropdown";
 
 // ── Dialog
 export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle, DialogDescription, DialogClose } from "@/components/Dialog";
@@ -114,6 +114,14 @@ export type { AccordionProps, AccordionItemProps, AccordionTriggerProps } from "
 // ── Carousel
 export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, CarouselDots, CarouselCounter } from "@/components/Carousel";
 export type { CarouselProps, CarouselContentProps, CarouselNavButtonProps, CarouselDotsProps, CarouselOrientation, CarouselNavStyle } from "@/components/Carousel";
+
+// ── Slider
+export { Slider } from "@/components/Slider";
+export type { SliderProps, SliderType } from "@/components/Slider";
+
+// ── StepIndicator
+export { StepIndicator } from "@/components/StepIndicator";
+export type { StepIndicatorProps, StepIndicatorType, StepIndicatorStyle, StepIndicatorSize, StepItem } from "@/components/StepIndicator";
 
 // ── Utilities ─────────────────────────────────────────────────
 export { cn }                               from "@/utils/cn";

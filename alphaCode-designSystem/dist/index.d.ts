@@ -447,6 +447,7 @@ interface TooltipProps {
 }
 declare function Tooltip({ content, placement, children, className, arrowClassName }: TooltipProps): react_jsx_runtime.JSX.Element;
 
+type ExpandIconType = "chevron" | "plusMinus" | "arrow";
 interface SideNavItem {
     id: string;
     label: string;
@@ -461,6 +462,7 @@ interface SideNavContextValue {
     openIds: Set<string>;
     toggleOpen: (id: string) => void;
     activeClassName: string;
+    expandIcon: ExpandIconType;
     renderLink?: (item: SideNavItem, children: React.ReactNode, className: string) => React.ReactNode;
 }
 interface SideNavigationProps extends Omit<React.HTMLAttributes<HTMLElement>, "title"> {
@@ -472,10 +474,14 @@ interface SideNavigationProps extends Omit<React.HTMLAttributes<HTMLElement>, "t
     /**
      * active 상태에 적용할 Tailwind 클래스
      * @default "text-ac-primary-50"
-     * @example "text-blue-500", "text-red-600"
      */
     activeClassName?: string;
     title?: string;
+    /**
+     * 하위 목록 열림/닫힘 토글 아이콘 타입
+     * @default "chevron"
+     */
+    expandIcon?: ExpandIconType;
     /**
      * href가 있는 아이템을 커스텀 링크로 렌더링
      * Next.js 사용 예:
@@ -496,7 +502,11 @@ interface TabsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange
     /** fill: 콘텐츠 너비 / full: 균등 분할 */
     variant?: TabVariant;
     size?: TabSize;
-    /** 활성 탭 색상 (기본 ac-primary-50) */
+    /**
+     * 활성 탭 색상
+     * 토큰명(ac-blue-50) 또는 hex/rgb 값 모두 사용 가능
+     * @default "ac-primary-50"
+     */
     activeColor?: string;
 }
 declare const Tabs: React.ForwardRefExoticComponent<TabsProps & React.RefAttributes<HTMLDivElement>>;
@@ -629,9 +639,11 @@ interface DropdownProps {
     onOpenChange?: (open: boolean) => void;
     side?: DropdownSide;
     align?: DropdownAlign;
+    /** 드롭다운 열림 방식: 클릭, 호버, 또는 우클릭 @default "click" */
+    trigger?: "click" | "hover" | "contextmenu";
     children: React.ReactNode;
 }
-declare function Dropdown({ open: controlledOpen, defaultOpen, onOpenChange, side, align, children, }: DropdownProps): react_jsx_runtime.JSX.Element;
+declare function Dropdown({ open: controlledOpen, defaultOpen, onOpenChange, side, align, trigger, children, }: DropdownProps): react_jsx_runtime.JSX.Element;
 declare namespace Dropdown {
     var displayName: string;
 }
@@ -687,6 +699,30 @@ interface DropdownRadioItemProps extends Omit<React.HTMLAttributes<HTMLDivElemen
     icon?: React.ReactNode;
 }
 declare const DropdownRadioItem: React.ForwardRefExoticComponent<DropdownRadioItemProps & React.RefAttributes<HTMLDivElement>>;
+interface DropdownAvatarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+    /** 아바타 이미지 URL */
+    src?: string;
+    /** 이름 (이니셜 생성에 사용) */
+    name?: string;
+    /** 주 텍스트 */
+    label: string;
+    /** 부 텍스트 (이메일 등) */
+    description?: string;
+}
+declare const DropdownAvatarHeader: React.ForwardRefExoticComponent<DropdownAvatarHeaderProps & React.RefAttributes<HTMLDivElement>>;
+interface DropdownAvatarItemProps extends React.HTMLAttributes<HTMLDivElement> {
+    /** 아바타 이미지 URL */
+    src?: string;
+    /** 이름 (이니셜 생성에 사용) */
+    name?: string;
+    /** 주 텍스트 */
+    label: string;
+    /** 부 텍스트 (이메일 등) */
+    description?: string;
+    disabled?: boolean;
+    onSelect?: () => void;
+}
+declare const DropdownAvatarItem: React.ForwardRefExoticComponent<DropdownAvatarItemProps & React.RefAttributes<HTMLDivElement>>;
 interface DropdownSubMenuProps {
     id: string;
     trigger: React.ReactNode;
@@ -807,6 +843,60 @@ interface CarouselDotsProps extends React.HTMLAttributes<HTMLDivElement> {
 declare const CarouselDots: React.ForwardRefExoticComponent<CarouselDotsProps & React.RefAttributes<HTMLDivElement>>;
 declare const CarouselCounter: React.ForwardRefExoticComponent<React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>>;
 
+type SliderType = "default" | "input" | "with-icon" | "range" | "range-input";
+interface SliderProps {
+    type?: SliderType;
+    /** thumb/fill 색상 Tailwind 클래스. 예: "bg-ac-blue-50" @default "bg-ac-primary-50" */
+    colorClassName?: string;
+    min?: number;
+    max?: number;
+    step?: number;
+    /** single: number, range: [number, number] */
+    value?: number | [number, number];
+    defaultValue?: number | [number, number];
+    onValueChange?: (value: number | [number, number]) => void;
+    disabled?: boolean;
+    /** default / range 타입에서 min/max 레이블 표시 */
+    showMinMax?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    className?: string;
+}
+declare function Slider({ type, colorClassName, min, max, step, value: controlledValue, defaultValue, onValueChange, disabled, showMinMax, leftIcon, rightIcon, className, }: SliderProps): react_jsx_runtime.JSX.Element;
+declare namespace Slider {
+    var displayName: string;
+}
+
+interface StepItem {
+    title?: string;
+    stepText?: string;
+}
+type StepIndicatorType = "horizontal" | "vertical";
+type StepIndicatorStyle = "default" | "simple";
+type StepIndicatorSize = "sm" | "md" | "lg";
+interface StepIndicatorProps {
+    steps: StepItem[];
+    /** 0-based 현재 진행 중인 단계 인덱스 */
+    current: number;
+    type?: StepIndicatorType;
+    /** default: 아이콘 + 텍스트 / simple: 아이콘만 */
+    style?: StepIndicatorStyle;
+    size?: StepIndicatorSize;
+    /** 단계 숫자 텍스트 표시 여부 */
+    showStepText?: boolean;
+    /**
+     * 활성/완료 색상 Tailwind text 클래스
+     * bg-current / border-current로 내부에서 파생됨
+     * @default "text-ac-primary-50"
+     */
+    colorClassName?: string;
+    className?: string;
+}
+declare function StepIndicator({ steps, current, type, style, size, showStepText, colorClassName, className, }: StepIndicatorProps): react_jsx_runtime.JSX.Element;
+declare namespace StepIndicator {
+    var displayName: string;
+}
+
 /**
  * Tailwind 클래스를 안전하게 병합합니다.
  * clsx로 조건부 클래스를 처리하고, twMerge로 충돌을 해결합니다.
@@ -816,4 +906,4 @@ declare const CarouselCounter: React.ForwardRefExoticComponent<React.HTMLAttribu
  */
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Accordion, AccordionContent, AccordionItem, type AccordionItemProps, type AccordionProps, AccordionTrigger, type AccordionTriggerProps, Avatar, type AvatarProps, Badge, type BadgeProps, type BreadcrumbItem, Breadcrumbs, type BreadcrumbsProps, Button, ButtonGroup, type ButtonGroupProps, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardFooterButtons, CardFooterInfo, type CardFooterInfoProps, type CardFooterProps, CardFooterUser, type CardFooterUserProps, CardHeader, type CardHeaderProps, CardMenu, type CardMenuProps, type CardProps, CardTitle, Carousel, CarouselContent, type CarouselContentProps, CarouselCounter, CarouselDots, type CarouselDotsProps, CarouselItem, type CarouselNavButtonProps, type CarouselNavStyle, CarouselNext, type CarouselOrientation, CarouselPrevious, type CarouselProps, Checkbox, CheckboxGroup, type CheckboxGroupProps, type CheckboxProps, DatePicker, type DatePickerMode, type DatePickerProps, type DatePickerSize, type DatePickerState, DateRangePicker, type DateRangePickerProps, Dialog, DialogBody, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogFooter, DialogHeader, type DialogHeaderProps, type DialogProps, type DialogSize, DialogTitle, DialogTrigger, type DialogTriggerProps, Divider, type DividerProps, Dropdown, type DropdownAlign, DropdownCheckboxItem, type DropdownCheckboxItemProps, DropdownContent, type DropdownContentProps, DropdownItem, type DropdownItemProps, DropdownLabel, type DropdownProps, DropdownRadioGroup, type DropdownRadioGroupProps, DropdownRadioItem, type DropdownRadioItemProps, DropdownSeparator, type DropdownSide, DropdownSubMenu, type DropdownSubMenuProps, DropdownTrigger, type DropdownTriggerProps, FAB, type FABProps, FileInput, type FileInputProps, Pagination, type PaginationProps, type PaginationType, type ProgressCircularSize, ProgressIndicator, type ProgressIndicatorProps, type ProgressLinearSize, type ProgressType, Radio, RadioGroup, type RadioGroupProps, type RadioProps, Select, type SelectOption, type SelectOptionGroup, type SelectProps, type SideNavItem, SideNavigation, type SideNavigationProps, Snackbar, type SnackbarItem, type SnackbarPosition, type SnackbarProps, SnackbarProvider, type SnackbarProviderProps, type SnackbarVariant, Switch, type SwitchProps, TabContent, type TabContentProps, TabList, type TabSize, TabTrigger, type TabTriggerProps, type TabVariant, Tabs, type TabsProps, TextInput, type TextInputProps, Textarea, type TextareaProps, ToggleGroup, ToggleGroupItem, type ToggleGroupItemProps, type ToggleGroupProps, Tooltip, type TooltipProps, avatarVariants, badgeVariants, buttonVariants, cn, fabVariants, useSnackbar };
+export { Accordion, AccordionContent, AccordionItem, type AccordionItemProps, type AccordionProps, AccordionTrigger, type AccordionTriggerProps, Avatar, type AvatarProps, Badge, type BadgeProps, type BreadcrumbItem, Breadcrumbs, type BreadcrumbsProps, Button, ButtonGroup, type ButtonGroupProps, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardFooterButtons, CardFooterInfo, type CardFooterInfoProps, type CardFooterProps, CardFooterUser, type CardFooterUserProps, CardHeader, type CardHeaderProps, CardMenu, type CardMenuProps, type CardProps, CardTitle, Carousel, CarouselContent, type CarouselContentProps, CarouselCounter, CarouselDots, type CarouselDotsProps, CarouselItem, type CarouselNavButtonProps, type CarouselNavStyle, CarouselNext, type CarouselOrientation, CarouselPrevious, type CarouselProps, Checkbox, CheckboxGroup, type CheckboxGroupProps, type CheckboxProps, DatePicker, type DatePickerMode, type DatePickerProps, type DatePickerSize, type DatePickerState, DateRangePicker, type DateRangePickerProps, Dialog, DialogBody, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogFooter, DialogHeader, type DialogHeaderProps, type DialogProps, type DialogSize, DialogTitle, DialogTrigger, type DialogTriggerProps, Divider, type DividerProps, Dropdown, type DropdownAlign, DropdownAvatarHeader, type DropdownAvatarHeaderProps, DropdownAvatarItem, type DropdownAvatarItemProps, DropdownCheckboxItem, type DropdownCheckboxItemProps, DropdownContent, type DropdownContentProps, DropdownItem, type DropdownItemProps, DropdownLabel, type DropdownProps, DropdownRadioGroup, type DropdownRadioGroupProps, DropdownRadioItem, type DropdownRadioItemProps, DropdownSeparator, type DropdownSide, DropdownSubMenu, type DropdownSubMenuProps, DropdownTrigger, type DropdownTriggerProps, FAB, type FABProps, FileInput, type FileInputProps, Pagination, type PaginationProps, type PaginationType, type ProgressCircularSize, ProgressIndicator, type ProgressIndicatorProps, type ProgressLinearSize, type ProgressType, Radio, RadioGroup, type RadioGroupProps, type RadioProps, Select, type SelectOption, type SelectOptionGroup, type SelectProps, type SideNavItem, SideNavigation, type SideNavigationProps, Slider, type SliderProps, type SliderType, Snackbar, type SnackbarItem, type SnackbarPosition, type SnackbarProps, SnackbarProvider, type SnackbarProviderProps, type SnackbarVariant, StepIndicator, type StepIndicatorProps, type StepIndicatorSize, type StepIndicatorStyle, type StepIndicatorType, type StepItem, Switch, type SwitchProps, TabContent, type TabContentProps, TabList, type TabSize, TabTrigger, type TabTriggerProps, type TabVariant, Tabs, type TabsProps, TextInput, type TextInputProps, Textarea, type TextareaProps, ToggleGroup, ToggleGroupItem, type ToggleGroupItemProps, type ToggleGroupProps, Tooltip, type TooltipProps, avatarVariants, badgeVariants, buttonVariants, cn, fabVariants, useSnackbar };

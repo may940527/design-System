@@ -2427,8 +2427,43 @@ function ToggleGroupItem({ value, icon, tooltip, children, className, disabled, 
 
 // src/components/SideNavigation/index.tsx
 import * as React17 from "react";
-import { ChevronDown as ChevronDown3, ChevronUp as ChevronUp2 } from "lucide-react";
+import { ChevronDown as ChevronDown3, ChevronRight as ChevronRight2 } from "lucide-react";
 import { Fragment as Fragment5, jsx as jsx19, jsxs as jsxs16 } from "react/jsx-runtime";
+function ExpandIconChevron({ isOpen }) {
+  return /* @__PURE__ */ jsx19(
+    ChevronDown3,
+    {
+      className: cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")
+    }
+  );
+}
+function ExpandIconPlusMinus({ isOpen }) {
+  return /* @__PURE__ */ jsxs16("span", { className: "relative w-4 h-4 flex items-center justify-center", children: [
+    /* @__PURE__ */ jsx19("span", { className: "absolute w-[10px] h-[1.5px] bg-current rounded-full" }),
+    /* @__PURE__ */ jsx19(
+      "span",
+      {
+        className: cn(
+          "absolute w-[1.5px] h-[10px] bg-current rounded-full transition-all duration-200",
+          isOpen ? "scale-y-0 opacity-0" : "scale-y-100 opacity-100"
+        )
+      }
+    )
+  ] });
+}
+function ExpandIconArrow({ isOpen }) {
+  return /* @__PURE__ */ jsx19(
+    ChevronRight2,
+    {
+      className: cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-90")
+    }
+  );
+}
+var expandIconMap = {
+  chevron: (isOpen) => /* @__PURE__ */ jsx19(ExpandIconChevron, { isOpen }),
+  plusMinus: (isOpen) => /* @__PURE__ */ jsx19(ExpandIconPlusMinus, { isOpen }),
+  arrow: (isOpen) => /* @__PURE__ */ jsx19(ExpandIconArrow, { isOpen })
+};
 var SideNavContext = React17.createContext(null);
 function useSideNav() {
   const ctx = React17.useContext(SideNavContext);
@@ -2444,6 +2479,7 @@ var SideNavigation = React17.forwardRef(
     onActiveChange,
     defaultOpenIds = [],
     activeClassName = "text-ac-primary-50",
+    expandIcon = "chevron",
     title,
     renderLink,
     ...props
@@ -2463,7 +2499,7 @@ var SideNavigation = React17.forwardRef(
         return next;
       });
     }, []);
-    return /* @__PURE__ */ jsx19(SideNavContext.Provider, { value: { activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink }, children: /* @__PURE__ */ jsxs16("nav", { ref, className: cn("flex flex-col w-full", className), ...props, children: [
+    return /* @__PURE__ */ jsx19(SideNavContext.Provider, { value: { activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink }, children: /* @__PURE__ */ jsxs16("nav", { ref, className: cn("flex flex-col w-full", className), ...props, children: [
       title && /* @__PURE__ */ jsx19("div", { className: "px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none", children: title }),
       /* @__PURE__ */ jsx19(SideNavList, { items, depth: 1 })
     ] }) });
@@ -2474,7 +2510,7 @@ function SideNavList({ items, depth }) {
   return /* @__PURE__ */ jsx19("ul", { role: "list", className: "flex flex-col w-full", children: items.map((item) => /* @__PURE__ */ jsx19(SideNavItemRow, { item, depth }, item.id)) });
 }
 function SideNavItemRow({ item, depth }) {
-  const { activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink } = useSideNav();
+  const { activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink } = useSideNav();
   const hasChildren = item.children && item.children.length > 0;
   const isOpen = openIds.has(item.id);
   const isActive = activeId === item.id;
@@ -2494,7 +2530,7 @@ function SideNavItemRow({ item, depth }) {
   const itemContent = /* @__PURE__ */ jsxs16(Fragment5, { children: [
     item.icon && /* @__PURE__ */ jsx19("span", { className: cn("shrink-0 w-4 h-4 flex items-center justify-center", isActive && activeClassName), children: item.icon }),
     /* @__PURE__ */ jsx19("span", { className: "flex-1 min-w-0 truncate text-left", children: item.label }),
-    hasChildren && /* @__PURE__ */ jsx19("span", { className: "shrink-0 text-muted-foreground", children: isOpen ? /* @__PURE__ */ jsx19(ChevronUp2, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx19(ChevronDown3, { className: "w-4 h-4" }) })
+    hasChildren && /* @__PURE__ */ jsx19("span", { className: "shrink-0 text-muted-foreground", children: expandIconMap[expandIcon](isOpen) })
   ] });
   return /* @__PURE__ */ jsxs16("li", { children: [
     item.divider && /* @__PURE__ */ jsx19("div", { className: "my-1 h-px bg-border mx-3" }),
@@ -2525,6 +2561,26 @@ function SideNavItemRow({ item, depth }) {
 // src/components/Tab/index.tsx
 import * as React18 from "react";
 import { jsx as jsx20, jsxs as jsxs17 } from "react/jsx-runtime";
+var tokenMap = {
+  "ac-primary": colors.primary,
+  "ac-green": colors.green,
+  "ac-blue": colors.blue,
+  "ac-red": colors.red,
+  "ac-orange": colors.orange,
+  "ac-purple": colors.purple,
+  "ac-gray": colors.gray
+};
+function resolveColor(color) {
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  const match = color.match(/^(ac-[a-z]+)-(\d+)$/);
+  if (match) {
+    const hex = tokenMap[match[1]]?.[Number(match[2])];
+    if (hex) return hex;
+  }
+  return color;
+}
 var tabSizeClass = {
   sm: "h-9 px-3 text-sm",
   md: "h-10 px-4 text-sm",
@@ -2544,8 +2600,7 @@ var Tabs = React18.forwardRef(
     onValueChange,
     variant = "fill",
     size = "md",
-    activeColor = "#FF6300",
-    /* ac-primary-50 */
+    activeColor = "ac-primary-50",
     children,
     ...props
   }, ref) => {
@@ -2605,7 +2660,7 @@ var TabTrigger = React18.forwardRef(
           disabled && "opacity-40 pointer-events-none",
           className
         ),
-        style: isActive ? { color: activeColor } : void 0,
+        style: isActive ? { color: resolveColor(activeColor) } : void 0,
         ...props,
         children: [
           children,
@@ -2613,7 +2668,7 @@ var TabTrigger = React18.forwardRef(
             "span",
             {
               className: "absolute bottom-0 left-0 right-0 h-0.5",
-              style: { backgroundColor: activeColor },
+              style: { backgroundColor: resolveColor(activeColor) },
               "aria-hidden": "true"
             }
           )
@@ -2646,7 +2701,7 @@ TabContent.displayName = "TabContent";
 // src/components/Snackbar/index.tsx
 import * as React19 from "react";
 import { createPortal } from "react-dom";
-import { X as X2, ChevronRight as ChevronRight2, Check as Check2 } from "lucide-react";
+import { X as X2, ChevronRight as ChevronRight3, Check as Check2 } from "lucide-react";
 import { jsx as jsx21, jsxs as jsxs18 } from "react/jsx-runtime";
 var variantBgClass = {
   default: "bg-ac-orange-10",
@@ -2771,7 +2826,7 @@ function SnackbarItem({
         onClick: onAction,
         "aria-label": "\uB354\uBCF4\uAE30",
         className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
-        children: /* @__PURE__ */ jsx21(ChevronRight2, { className: "w-4 h-4" })
+        children: /* @__PURE__ */ jsx21(ChevronRight3, { className: "w-4 h-4" })
       }
     );
     if (rightItem === "check") return /* @__PURE__ */ jsx21(Check2, { className: "shrink-0 w-4 h-4 opacity-80" });
@@ -2858,7 +2913,7 @@ var Snackbar = React19.forwardRef(
           onClick: onAction,
           "aria-label": "\uB354\uBCF4\uAE30",
           className: "shrink-0 p-0.5 rounded opacity-70 hover:opacity-100 transition-opacity",
-          children: /* @__PURE__ */ jsx21(ChevronRight2, { className: "w-4 h-4" })
+          children: /* @__PURE__ */ jsx21(ChevronRight3, { className: "w-4 h-4" })
         }
       );
       if (rightItem === "check") return /* @__PURE__ */ jsx21(Check2, { className: "shrink-0 w-4 h-4 opacity-80" });
@@ -2891,7 +2946,7 @@ Snackbar.displayName = "Snackbar";
 
 // src/components/Pagination/index.tsx
 import * as React20 from "react";
-import { ChevronLeft as ChevronLeft2, ChevronRight as ChevronRight3 } from "lucide-react";
+import { ChevronLeft as ChevronLeft2, ChevronRight as ChevronRight4 } from "lucide-react";
 import { jsx as jsx22, jsxs as jsxs19 } from "react/jsx-runtime";
 function getPageNumbers(current, total, maxVisible = 10) {
   if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i + 1);
@@ -3007,7 +3062,7 @@ var Pagination = React20.forwardRef(
                 onClick: () => goTo(page + 1),
                 disabled: disabled || page >= total,
                 "aria-label": "\uB2E4\uC74C \uD398\uC774\uC9C0",
-                children: /* @__PURE__ */ jsx22(ChevronRight3, {})
+                children: /* @__PURE__ */ jsx22(ChevronRight4, {})
               }
             )
           ]
@@ -3064,7 +3119,7 @@ var Pagination = React20.forwardRef(
               size: "sm",
               onClick: () => goTo(page + 1),
               disabled: disabled || page >= total,
-              rightIcon: /* @__PURE__ */ jsx22(ChevronRight3, {}),
+              rightIcon: /* @__PURE__ */ jsx22(ChevronRight4, {}),
               "aria-label": "\uB2E4\uC74C \uD398\uC774\uC9C0",
               children: "\uB2E4\uC74C"
             }
@@ -3142,9 +3197,9 @@ var ProgressIndicator = React21.forwardRef(
     ...props
   }, ref) => {
     const pct = indeterminate ? 0 : Math.min(100, Math.max(0, value / max * 100));
-    const resolveColor = (raw) => raw.startsWith("#") || raw.startsWith("rgb") || raw.startsWith("hsl") || raw.startsWith("var(") ? raw : `var(--${raw})`;
-    const resolvedColor = resolveColor(color);
-    const resolvedTrackColor = resolveColor(trackColor);
+    const resolveColor2 = (raw) => raw.startsWith("#") || raw.startsWith("rgb") || raw.startsWith("hsl") || raw.startsWith("var(") ? raw : `var(--${raw})`;
+    const resolvedColor = resolveColor2(color);
+    const resolvedTrackColor = resolveColor2(trackColor);
     if (type === "linear") {
       return /* @__PURE__ */ jsxs20("div", { ref, className: cn("flex flex-col gap-1.5 w-full", className), ...props, children: [
         (label || showValue) && /* @__PURE__ */ jsxs20("div", { className: "flex items-center justify-between gap-2", children: [
@@ -3257,7 +3312,7 @@ ProgressIndicator.displayName = "ProgressIndicator";
 
 // src/components/Dropdown/index.tsx
 import * as React22 from "react";
-import { ChevronRight as ChevronRight4, ExternalLink } from "lucide-react";
+import { ChevronRight as ChevronRight5, ExternalLink } from "lucide-react";
 import { jsx as jsx24, jsxs as jsxs21 } from "react/jsx-runtime";
 var DropdownContext = React22.createContext(null);
 function useDropdown() {
@@ -3272,27 +3327,33 @@ function Dropdown({
   onOpenChange,
   side = "bottom",
   align = "start",
+  trigger = "click",
   children
 }) {
   const [internalOpen, setInternalOpen] = React22.useState(defaultOpen);
   const controlled = controlledOpen !== void 0;
   const open = controlled ? controlledOpen : internalOpen;
   const triggerRef = React22.useRef(null);
+  const [anchorPoint, setAnchorPoint] = React22.useState(null);
   const setOpen = React22.useCallback((v) => {
     if (!controlled) setInternalOpen(v);
     onOpenChange?.(v);
   }, [controlled, onOpenChange]);
   const containerRef = React22.useRef(null);
   React22.useEffect(() => {
-    if (!open) return;
+    if (trigger !== "click" && trigger !== "contextmenu" || !open) return;
     const handler = (e) => {
+      if (trigger === "contextmenu") {
+        setOpen(false);
+        return;
+      }
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open, setOpen]);
+    document.addEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+    return () => document.removeEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+  }, [trigger, open, setOpen]);
   React22.useEffect(() => {
     if (!open) return;
     const handler = (e) => {
@@ -3301,7 +3362,18 @@ function Dropdown({
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open, setOpen]);
-  return /* @__PURE__ */ jsx24(DropdownContext.Provider, { value: { open, setOpen, triggerRef, side, align }, children: /* @__PURE__ */ jsx24("div", { ref: containerRef, className: "relative inline-block", children }) });
+  const hoverProps = trigger === "hover" ? {
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false)
+  } : {};
+  const contextMenuProps = trigger === "contextmenu" ? {
+    onContextMenu: (e) => {
+      e.preventDefault();
+      setAnchorPoint({ x: e.clientX, y: e.clientY });
+      setOpen(true);
+    }
+  } : {};
+  return /* @__PURE__ */ jsx24(DropdownContext.Provider, { value: { open, setOpen, triggerRef, side, align, anchorPoint }, children: /* @__PURE__ */ jsx24("div", { ref: containerRef, className: "relative inline-block", ...hoverProps, ...contextMenuProps, children }) });
 }
 Dropdown.displayName = "Dropdown";
 function DropdownTrigger({ children, asChild, disabled, onClick, ...props }) {
@@ -3357,27 +3429,44 @@ function getSideAlignClass(side, align) {
 }
 var DropdownContent = React22.forwardRef(
   ({ className, children, minWidth = 160, ...props }, ref) => {
-    const { open, side, align } = useDropdown();
+    const { open, side, align, anchorPoint } = useDropdown();
     const [openSub, setOpenSub] = React22.useState(null);
     if (!open) return null;
-    return /* @__PURE__ */ jsx24(SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ jsx24(
+    if (anchorPoint) {
+      return /* @__PURE__ */ jsx24(SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ jsx24(
+        "div",
+        {
+          ref,
+          role: "menu",
+          "aria-orientation": "vertical",
+          className: cn(
+            "fixed z-dropdown",
+            "bg-background rounded-md border border-border shadow-md",
+            "py-1 animate-scale-in",
+            className
+          ),
+          style: { minWidth, top: anchorPoint.y, left: anchorPoint.x },
+          ...props,
+          children
+        }
+      ) });
+    }
+    return /* @__PURE__ */ jsx24(SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ jsx24("div", { className: cn("absolute z-dropdown", getSideAlignClass(side, align)), children: /* @__PURE__ */ jsx24(
       "div",
       {
         ref,
         role: "menu",
         "aria-orientation": "vertical",
         className: cn(
-          "absolute z-dropdown",
           "bg-background rounded-md border border-border shadow-md",
           "py-1 animate-scale-in",
-          getSideAlignClass(side, align),
           className
         ),
         style: { minWidth },
         ...props,
         children
       }
-    ) });
+    ) }) });
   }
 );
 DropdownContent.displayName = "DropdownContent";
@@ -3441,7 +3530,7 @@ var DropdownItem = React22.forwardRef(
           /* @__PURE__ */ jsx24("span", { className: "flex-1 min-w-0 truncate", children }),
           shortcut && /* @__PURE__ */ jsx24("span", { className: "shrink-0 text-xs text-muted-foreground ml-auto pl-4 tabular-nums", children: shortcut }),
           external && /* @__PURE__ */ jsx24(ExternalLink, { className: "shrink-0 w-3 h-3 text-muted-foreground ml-auto" }),
-          hasSubmenu && /* @__PURE__ */ jsx24(ChevronRight4, { className: "shrink-0 w-4 h-4 text-muted-foreground ml-auto" })
+          hasSubmenu && /* @__PURE__ */ jsx24(ChevronRight5, { className: "shrink-0 w-4 h-4 text-muted-foreground ml-auto" })
         ]
       }
     );
@@ -3541,6 +3630,63 @@ var DropdownRadioItem = React22.forwardRef(
   }
 );
 DropdownRadioItem.displayName = "DropdownRadioItem";
+var DropdownAvatarHeader = React22.forwardRef(
+  ({ className, src, name, label, description, ...props }, ref) => /* @__PURE__ */ jsxs21(
+    "div",
+    {
+      ref,
+      className: cn("flex items-center gap-2 px-3 py-2 select-none", className),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsx24(Avatar, { src, name, size: "sm" }),
+        /* @__PURE__ */ jsxs21("div", { className: "flex flex-col min-w-0", children: [
+          /* @__PURE__ */ jsx24("span", { className: "text-xs font-medium text-foreground leading-tight", children: label }),
+          description && /* @__PURE__ */ jsx24("span", { className: "text-xs text-muted-foreground truncate leading-tight", children: description })
+        ] })
+      ]
+    }
+  )
+);
+DropdownAvatarHeader.displayName = "DropdownAvatarHeader";
+var DropdownAvatarItem = React22.forwardRef(
+  ({ className, src, name, label, description, disabled, onSelect, onClick, ...props }, ref) => {
+    const { setOpen } = useDropdown();
+    const handleClick = (e) => {
+      if (disabled) return;
+      onClick?.(e);
+      onSelect?.();
+      setOpen(false);
+    };
+    return /* @__PURE__ */ jsxs21(
+      "div",
+      {
+        ref,
+        role: "menuitem",
+        "aria-disabled": disabled,
+        tabIndex: disabled ? -1 : 0,
+        onClick: handleClick,
+        onKeyDown: (e) => {
+          if (e.key === "Enter" || e.key === " ") handleClick(e);
+        },
+        className: cn(
+          "flex items-center gap-2 px-3 py-2 w-full cursor-pointer select-none",
+          "transition-colors duration-fast",
+          disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-ac-gray-20",
+          className
+        ),
+        ...props,
+        children: [
+          /* @__PURE__ */ jsx24(Avatar, { src, name, size: "sm" }),
+          /* @__PURE__ */ jsxs21("div", { className: "flex flex-col min-w-0", children: [
+            /* @__PURE__ */ jsx24("span", { className: "text-xs font-medium text-foreground leading-tight", children: label }),
+            description && /* @__PURE__ */ jsx24("span", { className: "text-xs text-muted-foreground truncate leading-tight", children: description })
+          ] })
+        ]
+      }
+    );
+  }
+);
+DropdownAvatarItem.displayName = "DropdownAvatarItem";
 function DropdownSubMenu({ id, trigger, children, disabled }) {
   const subCtx = React22.useContext(SubDropdownContext);
   const isOpen = subCtx?.openSub === id;
@@ -3571,7 +3717,7 @@ function DropdownSubMenu({ id, trigger, children, disabled }) {
             ),
             children: [
               /* @__PURE__ */ jsx24("span", { className: "flex-1 min-w-0 truncate", children: trigger }),
-              /* @__PURE__ */ jsx24(ChevronRight4, { className: "shrink-0 w-4 h-4 text-muted-foreground" })
+              /* @__PURE__ */ jsx24(ChevronRight5, { className: "shrink-0 w-4 h-4 text-muted-foreground" })
             ]
           }
         ),
@@ -3940,7 +4086,7 @@ AccordionContent.displayName = "AccordionContent";
 
 // src/components/Carousel/index.tsx
 import * as React25 from "react";
-import { ChevronLeft as ChevronLeft3, ChevronRight as ChevronRight5, ChevronUp as ChevronUp3, ChevronDown as ChevronDown5 } from "lucide-react";
+import { ChevronLeft as ChevronLeft3, ChevronRight as ChevronRight6, ChevronUp as ChevronUp2, ChevronDown as ChevronDown5 } from "lucide-react";
 import { jsx as jsx27, jsxs as jsxs24 } from "react/jsx-runtime";
 var CarouselContext = React25.createContext(null);
 function useCarousel() {
@@ -4067,7 +4213,7 @@ var navStyles = {
 var CarouselPrevious = React25.forwardRef(
   ({ className, navStyle = "default", ...props }, ref) => {
     const { prev, current, orientation, loop } = useCarousel();
-    const Icon = orientation === "horizontal" ? ChevronLeft3 : ChevronUp3;
+    const Icon = orientation === "horizontal" ? ChevronLeft3 : ChevronUp2;
     const isDisabled = !loop && current === 0;
     return /* @__PURE__ */ jsx27(
       "button",
@@ -4088,7 +4234,7 @@ CarouselPrevious.displayName = "CarouselPrevious";
 var CarouselNext = React25.forwardRef(
   ({ className, navStyle = "default", ...props }, ref) => {
     const { next, current, pageCount, orientation, loop } = useCarousel();
-    const Icon = orientation === "horizontal" ? ChevronRight5 : ChevronDown5;
+    const Icon = orientation === "horizontal" ? ChevronRight6 : ChevronDown5;
     const isDisabled = !loop && current >= pageCount - 1;
     return /* @__PURE__ */ jsx27(
       "button",
@@ -4216,6 +4362,463 @@ var CarouselCounter = React25.forwardRef(
 );
 CarouselCounter.displayName = "CarouselCounter";
 
+// src/components/Slider/index.tsx
+import * as React26 from "react";
+import { jsx as jsx28, jsxs as jsxs25 } from "react/jsx-runtime";
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
+function snapToStep(val, min, step) {
+  return Math.round((val - min) / step) * step + min;
+}
+function isRange(type) {
+  return type === "range" || type === "range-input";
+}
+function SliderCounter({ value }) {
+  return /* @__PURE__ */ jsxs25("div", { className: "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex flex-col items-center pointer-events-none select-none", children: [
+    /* @__PURE__ */ jsx28("div", { className: "flex items-center justify-center w-[34px] h-6 rounded bg-ac-gray-90 text-ac-white text-xs font-bold", children: value }),
+    /* @__PURE__ */ jsx28("div", { className: "w-0 h-0 border-l-[5px] border-r-[5px] border-t-[5px] border-l-transparent border-r-transparent border-t-ac-gray-90" })
+  ] });
+}
+function SliderTrack({
+  values,
+  min,
+  max,
+  disabled,
+  activeThumb,
+  onThumbPointerDown,
+  onThumbKeyDown,
+  onTrackPointerDown,
+  trackRef,
+  thumbCount,
+  colorClassName
+}) {
+  const range = max - min;
+  const leftPct = (values[0] - min) / range * 100;
+  const rightPct = (values[1] - min) / range * 100;
+  const fillLeft = thumbCount === 1 ? 0 : leftPct;
+  const fillRight = thumbCount === 1 ? leftPct : rightPct;
+  return /* @__PURE__ */ jsxs25(
+    "div",
+    {
+      ref: trackRef,
+      className: "relative flex-1 flex items-center h-6 cursor-pointer",
+      onPointerDown: disabled ? void 0 : onTrackPointerDown,
+      children: [
+        /* @__PURE__ */ jsx28("div", { className: "absolute inset-x-0 h-1.5 rounded-md bg-ac-gray-30" }),
+        /* @__PURE__ */ jsx28(
+          "div",
+          {
+            className: cn(
+              "absolute h-1.5 rounded-md",
+              disabled ? "bg-ac-gray-40" : colorClassName,
+              !disabled && activeThumb === null && "opacity-50"
+            ),
+            style: { left: `${fillLeft}%`, right: `${100 - fillRight}%` }
+          }
+        ),
+        Array.from({ length: thumbCount }).map((_, i) => {
+          const val = i === 0 ? values[0] : values[1];
+          const pct = (val - min) / range * 100;
+          const isActive = activeThumb === i;
+          return /* @__PURE__ */ jsxs25(
+            "div",
+            {
+              className: "absolute top-1/2",
+              style: { left: `${pct}%`, transform: "translate(-50%, -50%)" },
+              children: [
+                isActive && /* @__PURE__ */ jsx28("div", { className: cn("absolute w-9 h-9 rounded-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 pointer-events-none opacity-20", colorClassName) }),
+                /* @__PURE__ */ jsx28(
+                  "div",
+                  {
+                    role: "slider",
+                    "aria-valuemin": min,
+                    "aria-valuemax": max,
+                    "aria-valuenow": val,
+                    "aria-disabled": disabled,
+                    tabIndex: disabled ? -1 : 0,
+                    className: cn(
+                      "relative w-6 h-6 rounded-full shadow-md select-none cursor-grab active:cursor-grabbing",
+                      disabled ? "bg-ac-gray-40 cursor-not-allowed" : colorClassName
+                    ),
+                    onPointerDown: disabled ? void 0 : (e) => onThumbPointerDown(e, i),
+                    onKeyDown: disabled ? void 0 : (e) => onThumbKeyDown(e, i),
+                    children: isActive && /* @__PURE__ */ jsx28(SliderCounter, { value: val })
+                  }
+                )
+              ]
+            },
+            i
+          );
+        })
+      ]
+    }
+  );
+}
+function Slider({
+  type = "default",
+  colorClassName = "bg-ac-primary-50",
+  min = 0,
+  max = 100,
+  step = 1,
+  value: controlledValue,
+  defaultValue,
+  onValueChange,
+  disabled = false,
+  showMinMax = false,
+  leftIcon,
+  rightIcon,
+  className
+}) {
+  const range = isRange(type);
+  const thumbCount = range ? 2 : 1;
+  const hasInput = type === "input" || type === "range-input";
+  const toInternal = (v) => {
+    if (v === void 0) return range ? [min, max] : [Math.round((min + max) / 2), max];
+    if (Array.isArray(v)) return [v[0], v[1]];
+    return [v, max];
+  };
+  const [internalValues, setInternalValues] = React26.useState(
+    () => toInternal(defaultValue ?? controlledValue)
+  );
+  const controlled = controlledValue !== void 0;
+  const values = controlled ? toInternal(controlledValue) : internalValues;
+  const valuesRef = React26.useRef(values);
+  valuesRef.current = values;
+  const setValues = React26.useCallback((next) => {
+    if (!controlled) setInternalValues(next);
+    if (range) {
+      onValueChange?.([next[0], next[1]]);
+    } else {
+      onValueChange?.(next[0]);
+    }
+  }, [controlled, range, onValueChange]);
+  const [inputStr0, setInputStr0] = React26.useState(String(values[0]));
+  const [inputStr1, setInputStr1] = React26.useState(String(values[1]));
+  const draggingIndex = React26.useRef(null);
+  React26.useEffect(() => {
+    if (!hasInput) return;
+    if (draggingIndex.current !== null) {
+      setInputStr0(String(values[0]));
+      setInputStr1(String(values[1]));
+    }
+  }, [values[0], values[1], hasInput]);
+  const trackRef = React26.useRef(null);
+  const [activeThumb, setActiveThumb] = React26.useState(null);
+  const pxToValue = React26.useCallback((clientX) => {
+    const rect = trackRef.current?.getBoundingClientRect();
+    if (!rect) return min;
+    const pct = clamp((clientX - rect.left) / rect.width, 0, 1);
+    const raw = min + pct * (max - min);
+    return clamp(snapToStep(raw, min, step), min, max);
+  }, [min, max, step]);
+  const handlePointerMove = React26.useCallback((e) => {
+    const idx = draggingIndex.current;
+    if (idx === null) return;
+    const cur = valuesRef.current;
+    const newVal = pxToValue(e.clientX);
+    const next = [cur[0], cur[1]];
+    if (idx === 0) {
+      next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    } else {
+      next[1] = Math.max(newVal, cur[0]);
+    }
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+  }, [pxToValue, range, setValues, hasInput]);
+  const handlePointerUp = React26.useCallback(() => {
+    draggingIndex.current = null;
+    setActiveThumb(null);
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove]);
+  const startDrag = React26.useCallback((idx) => {
+    draggingIndex.current = idx;
+    setActiveThumb(idx);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove, handlePointerUp]);
+  const nearestThumb = React26.useCallback((clientX) => {
+    if (thumbCount === 1) return 0;
+    const rect = trackRef.current?.getBoundingClientRect();
+    if (!rect) return 0;
+    const pct = (clientX - rect.left) / rect.width;
+    const cur = valuesRef.current;
+    const p0 = (cur[0] - min) / (max - min);
+    const p1 = (cur[1] - min) / (max - min);
+    return Math.abs(pct - p0) <= Math.abs(pct - p1) ? 0 : 1;
+  }, [thumbCount, min, max]);
+  const handleThumbPointerDown = (e, idx) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startDrag(idx);
+  };
+  const handleTrackPointerDown = (e) => {
+    e.preventDefault();
+    const cur = valuesRef.current;
+    const idx = nearestThumb(e.clientX);
+    const newVal = pxToValue(e.clientX);
+    const next = [cur[0], cur[1]];
+    if (idx === 0) {
+      next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    } else {
+      next[1] = Math.max(newVal, cur[0]);
+    }
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+    startDrag(idx);
+  };
+  const handleThumbKeyDown = (e, idx) => {
+    const delta = e.shiftKey ? step * 10 : step;
+    const cur = valuesRef.current;
+    let newVal = idx === 0 ? cur[0] : cur[1];
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      newVal = clamp(snapToStep(newVal + delta, min, step), min, max);
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      newVal = clamp(snapToStep(newVal - delta, min, step), min, max);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      newVal = min;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      newVal = max;
+    } else return;
+    const next = [cur[0], cur[1]];
+    if (idx === 0) next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    else next[1] = Math.max(newVal, cur[0]);
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+  };
+  const commitInput = (idx, raw) => {
+    const num = parseInt(raw, 10);
+    if (isNaN(num)) {
+      if (idx === 0) setInputStr0(String(valuesRef.current[0]));
+      else setInputStr1(String(valuesRef.current[1]));
+      return;
+    }
+    const val = clamp(snapToStep(num, min, step), min, max);
+    const cur = valuesRef.current;
+    const next = [cur[0], cur[1]];
+    if (idx === 0) next[0] = range ? Math.min(val, cur[1]) : val;
+    else next[1] = Math.max(val, cur[0]);
+    setValues(next);
+    if (idx === 0) setInputStr0(String(next[0]));
+    else setInputStr1(String(next[1]));
+  };
+  const track = /* @__PURE__ */ jsx28(
+    SliderTrack,
+    {
+      values,
+      min,
+      max,
+      disabled,
+      activeThumb,
+      onThumbPointerDown: handleThumbPointerDown,
+      onThumbKeyDown: handleThumbKeyDown,
+      onTrackPointerDown: handleTrackPointerDown,
+      trackRef,
+      thumbCount,
+      colorClassName
+    }
+  );
+  return /* @__PURE__ */ jsxs25(
+    "div",
+    {
+      className: cn(
+        "flex items-center gap-3 w-full",
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      ),
+      children: [
+        type === "with-icon" && leftIcon && /* @__PURE__ */ jsx28("span", { className: "shrink-0 w-3 h-3 flex items-center justify-center text-foreground", children: leftIcon }),
+        type === "range-input" && /* @__PURE__ */ jsx28("div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ jsx28(
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr0,
+            disabled,
+            onChange: (e) => setInputStr0(e.target.value),
+            onBlur: (e) => commitInput(0, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(0, e.target.value);
+            }
+          }
+        ) }),
+        (type === "default" || type === "range") && showMinMax && /* @__PURE__ */ jsx28("span", { className: "shrink-0 text-sm text-foreground", children: min }),
+        track,
+        type === "with-icon" && rightIcon && /* @__PURE__ */ jsx28("span", { className: "shrink-0 w-6 h-6 flex items-center justify-center text-foreground", children: rightIcon }),
+        type === "input" && /* @__PURE__ */ jsx28("div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ jsx28(
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr0,
+            disabled,
+            onChange: (e) => setInputStr0(e.target.value),
+            onBlur: (e) => commitInput(0, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(0, e.target.value);
+            }
+          }
+        ) }),
+        type === "range-input" && /* @__PURE__ */ jsx28("div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ jsx28(
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr1,
+            disabled,
+            onChange: (e) => setInputStr1(e.target.value),
+            onBlur: (e) => commitInput(1, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(1, e.target.value);
+            }
+          }
+        ) }),
+        (type === "default" || type === "range") && showMinMax && /* @__PURE__ */ jsx28("span", { className: "shrink-0 text-sm text-foreground", children: max })
+      ]
+    }
+  );
+}
+Slider.displayName = "Slider";
+
+// src/components/StepIndicator/index.tsx
+import { Check as Check3, Ellipsis } from "lucide-react";
+import { jsx as jsx29, jsxs as jsxs26 } from "react/jsx-runtime";
+var sizeConfig = {
+  sm: {
+    complete: { outer: "w-3 h-3", check: "w-2 h-2" },
+    current: { outer: "w-4 h-4", inner: "w-2.5 h-2.5", ellipsis: "w-2 h-2" },
+    before: { outer: "w-3 h-3", dot: "w-2 h-2" },
+    iconRowH: "h-4",
+    iconColW: "w-4",
+    vertLineMin: "min-h-[32px]",
+    textSize: "text-xs",
+    stepTextSize: "text-xs",
+    titleMt: "mt-2",
+    vertPb: "pb-6"
+  },
+  md: {
+    complete: { outer: "w-4 h-4", check: "w-2.5 h-2.5" },
+    current: { outer: "w-5 h-5", inner: "w-3 h-3", ellipsis: "w-2.5 h-2.5" },
+    before: { outer: "w-4 h-4", dot: "w-2.5 h-2.5" },
+    iconRowH: "h-5",
+    iconColW: "w-5",
+    vertLineMin: "min-h-[40px]",
+    textSize: "text-sm",
+    stepTextSize: "text-sm",
+    titleMt: "mt-3",
+    vertPb: "pb-8"
+  },
+  lg: {
+    complete: { outer: "w-5 h-5", check: "w-3 h-3" },
+    current: { outer: "w-6 h-6", inner: "w-4 h-4", ellipsis: "w-3 h-3" },
+    before: { outer: "w-5 h-5", dot: "w-3 h-3" },
+    iconRowH: "h-6",
+    iconColW: "w-6",
+    vertLineMin: "min-h-[48px]",
+    textSize: "text-base",
+    stepTextSize: "text-sm",
+    titleMt: "mt-3",
+    vertPb: "pb-10"
+  }
+};
+function StepIcon({ state, size }) {
+  const cfg = sizeConfig[size];
+  if (state === "complete") {
+    return /* @__PURE__ */ jsx29("div", { className: cn("rounded-full bg-current flex items-center justify-center shrink-0", cfg.complete.outer), children: /* @__PURE__ */ jsx29(Check3, { className: cn("text-white", cfg.complete.check), strokeWidth: 3 }) });
+  }
+  if (state === "current") {
+    return /* @__PURE__ */ jsx29("div", { className: cn("rounded-full border-[1.2px] border-current flex items-center justify-center shrink-0", cfg.current.outer), children: /* @__PURE__ */ jsx29("div", { className: cn("rounded-full bg-current flex items-center justify-center", cfg.current.inner), children: /* @__PURE__ */ jsx29(Ellipsis, { className: cn("text-white", cfg.current.ellipsis), strokeWidth: 2.5 }) }) });
+  }
+  return /* @__PURE__ */ jsx29("div", { className: cn("rounded-full bg-ac-gray-30 flex items-center justify-center shrink-0", cfg.before.outer), children: /* @__PURE__ */ jsx29("div", { className: cn("rounded-full bg-ac-gray-40", cfg.before.dot) }) });
+}
+function StepIndicator({
+  steps,
+  current,
+  type = "horizontal",
+  style = "default",
+  size = "md",
+  showStepText = false,
+  colorClassName = "text-ac-primary-50",
+  className
+}) {
+  const cfg = sizeConfig[size];
+  const getState = (index) => {
+    if (index < current) return "complete";
+    if (index === current) return "current";
+    return "before";
+  };
+  if (type === "horizontal") {
+    return /* @__PURE__ */ jsx29("div", { className: cn("flex w-full", colorClassName, className), children: steps.map((step, i) => {
+      const state = getState(i);
+      const isFirst = i === 0;
+      const isLast = i === steps.length - 1;
+      return /* @__PURE__ */ jsxs26("div", { className: "flex-1 flex flex-col items-center", children: [
+        /* @__PURE__ */ jsxs26("div", { className: cn("flex items-center w-full", cfg.iconRowH), children: [
+          /* @__PURE__ */ jsx29(
+            "div",
+            {
+              className: cn(
+                "flex-1 h-px",
+                isFirst ? "invisible" : getState(i - 1) === "complete" ? "bg-current" : "bg-ac-gray-40"
+              )
+            }
+          ),
+          /* @__PURE__ */ jsx29(StepIcon, { state, size }),
+          /* @__PURE__ */ jsx29(
+            "div",
+            {
+              className: cn(
+                "flex-1 h-px",
+                isLast ? "invisible" : state === "complete" ? "bg-current" : "bg-ac-gray-40"
+              )
+            }
+          )
+        ] }),
+        showStepText && /* @__PURE__ */ jsx29("span", { className: cn("font-medium text-muted-foreground mt-1", cfg.stepTextSize), children: step.stepText ?? `${i + 1}\uB2E8\uACC4` }),
+        style === "default" && step.title && /* @__PURE__ */ jsx29("span", { className: cn("font-medium text-foreground text-center", cfg.textSize, showStepText ? "mt-0.5" : cfg.titleMt), children: step.title })
+      ] }, i);
+    }) });
+  }
+  return /* @__PURE__ */ jsx29("div", { className: cn("flex flex-col", colorClassName, className), children: steps.map((step, i) => {
+    const state = getState(i);
+    const isLast = i === steps.length - 1;
+    return /* @__PURE__ */ jsxs26("div", { className: "flex gap-3", children: [
+      /* @__PURE__ */ jsxs26("div", { className: cn("flex flex-col items-center shrink-0", cfg.iconColW), children: [
+        /* @__PURE__ */ jsx29(StepIcon, { state, size }),
+        !isLast && /* @__PURE__ */ jsx29(
+          "div",
+          {
+            className: cn(
+              "w-px flex-1",
+              cfg.vertLineMin,
+              state === "complete" ? "bg-current" : "bg-ac-gray-40"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs26("div", { className: cn("flex flex-col gap-1", !isLast && cfg.vertPb), children: [
+        showStepText && /* @__PURE__ */ jsx29("span", { className: cn("font-medium text-muted-foreground leading-5", cfg.stepTextSize), children: step.stepText ?? `${i + 1}\uB2E8\uACC4` }),
+        style === "default" && step.title && /* @__PURE__ */ jsx29("span", { className: cn("font-medium text-foreground leading-5", cfg.textSize), children: step.title })
+      ] })
+    ] }, i);
+  }) });
+}
+StepIndicator.displayName = "StepIndicator";
+
 // src/index.ts
 export * from "lucide-react";
 export {
@@ -4260,6 +4863,8 @@ export {
   DialogTrigger,
   Divider,
   Dropdown,
+  DropdownAvatarHeader,
+  DropdownAvatarItem,
   DropdownCheckboxItem,
   DropdownContent,
   DropdownItem,
@@ -4277,8 +4882,10 @@ export {
   RadioGroup,
   Select,
   SideNavigation,
+  Slider,
   Snackbar,
   SnackbarProvider,
+  StepIndicator,
   Switch,
   TabContent,
   TabList,

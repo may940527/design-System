@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 /* ══════════════════════════════════════════════════════════════
    Types
 ══════════════════════════════════════════════════════════════ */
+export type ExpandIconType = "chevron" | "plusMinus" | "arrow";
+
 export interface SideNavItem {
   id: string;
   label: string;
@@ -17,6 +19,45 @@ export interface SideNavItem {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   Expand Icons
+══════════════════════════════════════════════════════════════ */
+function ExpandIconChevron({ isOpen }: { isOpen: boolean }) {
+  return (
+    <ChevronDown
+      className={cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")}
+    />
+  );
+}
+
+function ExpandIconPlusMinus({ isOpen }: { isOpen: boolean }) {
+  return (
+    <span className="relative w-4 h-4 flex items-center justify-center">
+      <span className="absolute w-[10px] h-[1.5px] bg-current rounded-full" />
+      <span
+        className={cn(
+          "absolute w-[1.5px] h-[10px] bg-current rounded-full transition-all duration-200",
+          isOpen ? "scale-y-0 opacity-0" : "scale-y-100 opacity-100"
+        )}
+      />
+    </span>
+  );
+}
+
+function ExpandIconArrow({ isOpen }: { isOpen: boolean }) {
+  return (
+    <ChevronRight
+      className={cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-90")}
+    />
+  );
+}
+
+const expandIconMap: Record<ExpandIconType, (isOpen: boolean) => React.ReactNode> = {
+  chevron:   (isOpen) => <ExpandIconChevron isOpen={isOpen} />,
+  plusMinus: (isOpen) => <ExpandIconPlusMinus isOpen={isOpen} />,
+  arrow:     (isOpen) => <ExpandIconArrow isOpen={isOpen} />,
+};
+
+/* ══════════════════════════════════════════════════════════════
    Context
 ══════════════════════════════════════════════════════════════ */
 interface SideNavContextValue {
@@ -25,6 +66,7 @@ interface SideNavContextValue {
   openIds: Set<string>;
   toggleOpen: (id: string) => void;
   activeClassName: string;
+  expandIcon: ExpandIconType;
   renderLink?: (item: SideNavItem, children: React.ReactNode, className: string) => React.ReactNode;
 }
 
@@ -48,10 +90,14 @@ export interface SideNavigationProps extends Omit<React.HTMLAttributes<HTMLEleme
   /**
    * active 상태에 적용할 Tailwind 클래스
    * @default "text-ac-primary-50"
-   * @example "text-blue-500", "text-red-600"
    */
   activeClassName?: string;
   title?: string;
+  /**
+   * 하위 목록 열림/닫힘 토글 아이콘 타입
+   * @default "chevron"
+   */
+  expandIcon?: ExpandIconType;
   /**
    * href가 있는 아이템을 커스텀 링크로 렌더링
    * Next.js 사용 예:
@@ -72,6 +118,7 @@ const SideNavigation = React.forwardRef<HTMLElement, SideNavigationProps>(
       onActiveChange,
       defaultOpenIds = [],
       activeClassName = "text-ac-primary-50",
+      expandIcon = "chevron",
       title,
       renderLink,
       ...props
@@ -98,7 +145,7 @@ const SideNavigation = React.forwardRef<HTMLElement, SideNavigationProps>(
     }, []);
 
     return (
-      <SideNavContext.Provider value={{ activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink }}>
+      <SideNavContext.Provider value={{ activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink }}>
         <nav ref={ref} className={cn("flex flex-col w-full", className)} {...props}>
           {title && (
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none">
@@ -130,7 +177,7 @@ function SideNavList({ items, depth }: { items: SideNavItem[]; depth: number }) 
    SideNavItemRow
 ══════════════════════════════════════════════════════════════ */
 function SideNavItemRow({ item, depth }: { item: SideNavItem; depth: number }) {
-  const { activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink } = useSideNav();
+  const { activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink } = useSideNav();
   const hasChildren = item.children && item.children.length > 0;
   const isOpen = openIds.has(item.id);
   const isActive = activeId === item.id;
@@ -163,7 +210,7 @@ function SideNavItemRow({ item, depth }: { item: SideNavItem; depth: number }) {
       <span className="flex-1 min-w-0 truncate text-left">{item.label}</span>
       {hasChildren && (
         <span className="shrink-0 text-muted-foreground">
-          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandIconMap[expandIcon](isOpen)}
         </span>
       )}
     </>

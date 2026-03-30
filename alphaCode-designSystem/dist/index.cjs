@@ -11,7 +11,7 @@
 var _chunkYTZJTG25cjs = require('./chunk-YTZJTG25.cjs');
 
 // src/components/Button/index.tsx
-var _react = require('react'); var React = _interopRequireWildcard(_react); var React2 = _interopRequireWildcard(_react); var React4 = _interopRequireWildcard(_react); var React3 = _interopRequireWildcard(_react); var React9 = _interopRequireWildcard(_react); var React5 = _interopRequireWildcard(_react); var React6 = _interopRequireWildcard(_react); var React7 = _interopRequireWildcard(_react); var React8 = _interopRequireWildcard(_react); var React10 = _interopRequireWildcard(_react); var React11 = _interopRequireWildcard(_react); var React12 = _interopRequireWildcard(_react); var React13 = _interopRequireWildcard(_react); var React14 = _interopRequireWildcard(_react); var React15 = _interopRequireWildcard(_react); var React16 = _interopRequireWildcard(_react); var React17 = _interopRequireWildcard(_react); var React18 = _interopRequireWildcard(_react); var React19 = _interopRequireWildcard(_react); var React20 = _interopRequireWildcard(_react); var React21 = _interopRequireWildcard(_react); var React22 = _interopRequireWildcard(_react); var React23 = _interopRequireWildcard(_react); var React24 = _interopRequireWildcard(_react); var React25 = _interopRequireWildcard(_react);
+var _react = require('react'); var React = _interopRequireWildcard(_react); var React2 = _interopRequireWildcard(_react); var React4 = _interopRequireWildcard(_react); var React3 = _interopRequireWildcard(_react); var React9 = _interopRequireWildcard(_react); var React5 = _interopRequireWildcard(_react); var React6 = _interopRequireWildcard(_react); var React7 = _interopRequireWildcard(_react); var React8 = _interopRequireWildcard(_react); var React10 = _interopRequireWildcard(_react); var React11 = _interopRequireWildcard(_react); var React12 = _interopRequireWildcard(_react); var React13 = _interopRequireWildcard(_react); var React14 = _interopRequireWildcard(_react); var React15 = _interopRequireWildcard(_react); var React16 = _interopRequireWildcard(_react); var React17 = _interopRequireWildcard(_react); var React18 = _interopRequireWildcard(_react); var React19 = _interopRequireWildcard(_react); var React20 = _interopRequireWildcard(_react); var React21 = _interopRequireWildcard(_react); var React22 = _interopRequireWildcard(_react); var React23 = _interopRequireWildcard(_react); var React24 = _interopRequireWildcard(_react); var React25 = _interopRequireWildcard(_react); var React26 = _interopRequireWildcard(_react);
 var _reactslot = require('@radix-ui/react-slot');
 var _classvarianceauthority = require('class-variance-authority');
 
@@ -2429,6 +2429,41 @@ function ToggleGroupItem({ value, icon, tooltip, children, className, disabled, 
 
 
 
+function ExpandIconChevron({ isOpen }) {
+  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+    _lucidereact.ChevronDown,
+    {
+      className: cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-180")
+    }
+  );
+}
+function ExpandIconPlusMinus({ isOpen }) {
+  return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "span", { className: "relative w-4 h-4 flex items-center justify-center", children: [
+    /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "absolute w-[10px] h-[1.5px] bg-current rounded-full" }),
+    /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+      "span",
+      {
+        className: cn(
+          "absolute w-[1.5px] h-[10px] bg-current rounded-full transition-all duration-200",
+          isOpen ? "scale-y-0 opacity-0" : "scale-y-100 opacity-100"
+        )
+      }
+    )
+  ] });
+}
+function ExpandIconArrow({ isOpen }) {
+  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+    _lucidereact.ChevronRight,
+    {
+      className: cn("w-4 h-4 transition-transform duration-200", isOpen && "rotate-90")
+    }
+  );
+}
+var expandIconMap = {
+  chevron: (isOpen) => /* @__PURE__ */ _jsxruntime.jsx.call(void 0, ExpandIconChevron, { isOpen }),
+  plusMinus: (isOpen) => /* @__PURE__ */ _jsxruntime.jsx.call(void 0, ExpandIconPlusMinus, { isOpen }),
+  arrow: (isOpen) => /* @__PURE__ */ _jsxruntime.jsx.call(void 0, ExpandIconArrow, { isOpen })
+};
 var SideNavContext = React17.createContext(null);
 function useSideNav() {
   const ctx = React17.useContext(SideNavContext);
@@ -2444,6 +2479,7 @@ var SideNavigation = React17.forwardRef(
     onActiveChange,
     defaultOpenIds = [],
     activeClassName = "text-ac-primary-50",
+    expandIcon = "chevron",
     title,
     renderLink,
     ...props
@@ -2463,7 +2499,7 @@ var SideNavigation = React17.forwardRef(
         return next;
       });
     }, []);
-    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SideNavContext.Provider, { value: { activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink }, children: /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "nav", { ref, className: cn("flex flex-col w-full", className), ...props, children: [
+    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SideNavContext.Provider, { value: { activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink }, children: /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "nav", { ref, className: cn("flex flex-col w-full", className), ...props, children: [
       title && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none", children: title }),
       /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SideNavList, { items, depth: 1 })
     ] }) });
@@ -2474,7 +2510,7 @@ function SideNavList({ items, depth }) {
   return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "ul", { role: "list", className: "flex flex-col w-full", children: items.map((item) => /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SideNavItemRow, { item, depth }, item.id)) });
 }
 function SideNavItemRow({ item, depth }) {
-  const { activeId, onSelect, openIds, toggleOpen, activeClassName, renderLink } = useSideNav();
+  const { activeId, onSelect, openIds, toggleOpen, activeClassName, expandIcon, renderLink } = useSideNav();
   const hasChildren = item.children && item.children.length > 0;
   const isOpen = openIds.has(item.id);
   const isActive = activeId === item.id;
@@ -2494,7 +2530,7 @@ function SideNavItemRow({ item, depth }) {
   const itemContent = /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, _jsxruntime.Fragment, { children: [
     item.icon && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: cn("shrink-0 w-4 h-4 flex items-center justify-center", isActive && activeClassName), children: item.icon }),
     /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "flex-1 min-w-0 truncate text-left", children: item.label }),
-    hasChildren && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 text-muted-foreground", children: isOpen ? /* @__PURE__ */ _jsxruntime.jsx.call(void 0, _lucidereact.ChevronUp, { className: "w-4 h-4" }) : /* @__PURE__ */ _jsxruntime.jsx.call(void 0, _lucidereact.ChevronDown, { className: "w-4 h-4" }) })
+    hasChildren && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 text-muted-foreground", children: expandIconMap[expandIcon](isOpen) })
   ] });
   return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "li", { children: [
     item.divider && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "my-1 h-px bg-border mx-3" }),
@@ -2525,6 +2561,26 @@ function SideNavItemRow({ item, depth }) {
 // src/components/Tab/index.tsx
 
 
+var tokenMap = {
+  "ac-primary": _chunkYTZJTG25cjs.colors.primary,
+  "ac-green": _chunkYTZJTG25cjs.colors.green,
+  "ac-blue": _chunkYTZJTG25cjs.colors.blue,
+  "ac-red": _chunkYTZJTG25cjs.colors.red,
+  "ac-orange": _chunkYTZJTG25cjs.colors.orange,
+  "ac-purple": _chunkYTZJTG25cjs.colors.purple,
+  "ac-gray": _chunkYTZJTG25cjs.colors.gray
+};
+function resolveColor(color) {
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  const match = color.match(/^(ac-[a-z]+)-(\d+)$/);
+  if (match) {
+    const hex = _optionalChain([tokenMap, 'access', _45 => _45[match[1]], 'optionalAccess', _46 => _46[Number(match[2])]]);
+    if (hex) return hex;
+  }
+  return color;
+}
 var tabSizeClass = {
   sm: "h-9 px-3 text-sm",
   md: "h-10 px-4 text-sm",
@@ -2544,8 +2600,7 @@ var Tabs = React18.forwardRef(
     onValueChange,
     variant = "fill",
     size = "md",
-    activeColor = "#FF6300",
-    /* ac-primary-50 */
+    activeColor = "ac-primary-50",
     children,
     ...props
   }, ref) => {
@@ -2554,7 +2609,7 @@ var Tabs = React18.forwardRef(
     const value = controlled ? controlledValue : internalValue;
     const onChange = React18.useCallback((v) => {
       if (!controlled) setInternalValue(v);
-      _optionalChain([onValueChange, 'optionalCall', _45 => _45(v)]);
+      _optionalChain([onValueChange, 'optionalCall', _47 => _47(v)]);
     }, [controlled, onValueChange]);
     return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, TabContext.Provider, { value: { value, onChange, variant, size, activeColor }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { ref, className: cn("w-full", className), ...props, children }) });
   }
@@ -2605,7 +2660,7 @@ var TabTrigger = React18.forwardRef(
           disabled && "opacity-40 pointer-events-none",
           className
         ),
-        style: isActive ? { color: activeColor } : void 0,
+        style: isActive ? { color: resolveColor(activeColor) } : void 0,
         ...props,
         children: [
           children,
@@ -2613,7 +2668,7 @@ var TabTrigger = React18.forwardRef(
             "span",
             {
               className: "absolute bottom-0 left-0 right-0 h-0.5",
-              style: { backgroundColor: activeColor },
+              style: { backgroundColor: resolveColor(activeColor) },
               "aria-hidden": "true"
             }
           )
@@ -2820,7 +2875,7 @@ var Snackbar = React19.forwardRef(
       } else {
         setVisible(false);
       }
-      _optionalChain([onClose, 'optionalCall', _46 => _46()]);
+      _optionalChain([onClose, 'optionalCall', _48 => _48()]);
     };
     if (!visible) return null;
     if (collapsed) {
@@ -2935,12 +2990,12 @@ var Pagination = React20.forwardRef(
       if (disabled) return;
       const next = Math.max(1, Math.min(p, total));
       if (!controlled) setInternalPage(next);
-      _optionalChain([onPageChange, 'optionalCall', _47 => _47(next)]);
+      _optionalChain([onPageChange, 'optionalCall', _49 => _49(next)]);
     };
     const handlePageSizeChange = (val) => {
       const size = Number(val);
       if (!pageSizeControlled) setInternalPageSize(size);
-      _optionalChain([onPageSizeChange, 'optionalCall', _48 => _48(size)]);
+      _optionalChain([onPageSizeChange, 'optionalCall', _50 => _50(size)]);
       goTo(1);
     };
     const handleJumper = (e) => {
@@ -3142,9 +3197,9 @@ var ProgressIndicator = React21.forwardRef(
     ...props
   }, ref) => {
     const pct = indeterminate ? 0 : Math.min(100, Math.max(0, value / max * 100));
-    const resolveColor = (raw) => raw.startsWith("#") || raw.startsWith("rgb") || raw.startsWith("hsl") || raw.startsWith("var(") ? raw : `var(--${raw})`;
-    const resolvedColor = resolveColor(color);
-    const resolvedTrackColor = resolveColor(trackColor);
+    const resolveColor2 = (raw) => raw.startsWith("#") || raw.startsWith("rgb") || raw.startsWith("hsl") || raw.startsWith("var(") ? raw : `var(--${raw})`;
+    const resolvedColor = resolveColor2(color);
+    const resolvedTrackColor = resolveColor2(trackColor);
     if (type === "linear") {
       return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { ref, className: cn("flex flex-col gap-1.5 w-full", className), ...props, children: [
         (label || showValue) && /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "flex items-center justify-between gap-2", children: [
@@ -3272,27 +3327,33 @@ function Dropdown({
   onOpenChange,
   side = "bottom",
   align = "start",
+  trigger = "click",
   children
 }) {
   const [internalOpen, setInternalOpen] = React22.useState(defaultOpen);
   const controlled = controlledOpen !== void 0;
   const open = controlled ? controlledOpen : internalOpen;
   const triggerRef = React22.useRef(null);
+  const [anchorPoint, setAnchorPoint] = React22.useState(null);
   const setOpen = React22.useCallback((v) => {
     if (!controlled) setInternalOpen(v);
-    _optionalChain([onOpenChange, 'optionalCall', _49 => _49(v)]);
+    _optionalChain([onOpenChange, 'optionalCall', _51 => _51(v)]);
   }, [controlled, onOpenChange]);
   const containerRef = React22.useRef(null);
   React22.useEffect(() => {
-    if (!open) return;
+    if (trigger !== "click" && trigger !== "contextmenu" || !open) return;
     const handler = (e) => {
+      if (trigger === "contextmenu") {
+        setOpen(false);
+        return;
+      }
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open, setOpen]);
+    document.addEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+    return () => document.removeEventListener(trigger === "contextmenu" ? "click" : "mousedown", handler);
+  }, [trigger, open, setOpen]);
   React22.useEffect(() => {
     if (!open) return;
     const handler = (e) => {
@@ -3301,14 +3362,25 @@ function Dropdown({
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open, setOpen]);
-  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, DropdownContext.Provider, { value: { open, setOpen, triggerRef, side, align }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { ref: containerRef, className: "relative inline-block", children }) });
+  const hoverProps = trigger === "hover" ? {
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false)
+  } : {};
+  const contextMenuProps = trigger === "contextmenu" ? {
+    onContextMenu: (e) => {
+      e.preventDefault();
+      setAnchorPoint({ x: e.clientX, y: e.clientY });
+      setOpen(true);
+    }
+  } : {};
+  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, DropdownContext.Provider, { value: { open, setOpen, triggerRef, side, align, anchorPoint }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { ref: containerRef, className: "relative inline-block", ...hoverProps, ...contextMenuProps, children }) });
 }
 Dropdown.displayName = "Dropdown";
 function DropdownTrigger({ children, asChild, disabled, onClick, ...props }) {
   const { setOpen, open, triggerRef } = useDropdown();
   const handleClick = (e) => {
     if (disabled) return;
-    _optionalChain([onClick, 'optionalCall', _50 => _50(e)]);
+    _optionalChain([onClick, 'optionalCall', _52 => _52(e)]);
     setOpen(!open);
   };
   if (asChild && React22.isValidElement(children)) {
@@ -3357,27 +3429,44 @@ function getSideAlignClass(side, align) {
 }
 var DropdownContent = React22.forwardRef(
   ({ className, children, minWidth = 160, ...props }, ref) => {
-    const { open, side, align } = useDropdown();
+    const { open, side, align, anchorPoint } = useDropdown();
     const [openSub, setOpenSub] = React22.useState(null);
     if (!open) return null;
-    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+    if (anchorPoint) {
+      return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+        "div",
+        {
+          ref,
+          role: "menu",
+          "aria-orientation": "vertical",
+          className: cn(
+            "fixed z-dropdown",
+            "bg-background rounded-md border border-border shadow-md",
+            "py-1 animate-scale-in",
+            className
+          ),
+          style: { minWidth, top: anchorPoint.y, left: anchorPoint.x },
+          ...props,
+          children
+        }
+      ) });
+    }
+    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SubDropdownContext.Provider, { value: { openSub, setOpenSub }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("absolute z-dropdown", getSideAlignClass(side, align)), children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
       "div",
       {
         ref,
         role: "menu",
         "aria-orientation": "vertical",
         className: cn(
-          "absolute z-dropdown",
           "bg-background rounded-md border border-border shadow-md",
           "py-1 animate-scale-in",
-          getSideAlignClass(side, align),
           className
         ),
         style: { minWidth },
         ...props,
         children
       }
-    ) });
+    ) }) });
   }
 );
 DropdownContent.displayName = "DropdownContent";
@@ -3413,8 +3502,8 @@ var DropdownItem = React22.forwardRef(
     const { setOpen } = useDropdown();
     const handleClick = (e) => {
       if (disabled) return;
-      _optionalChain([onClick, 'optionalCall', _51 => _51(e)]);
-      _optionalChain([onSelect, 'optionalCall', _52 => _52()]);
+      _optionalChain([onClick, 'optionalCall', _53 => _53(e)]);
+      _optionalChain([onSelect, 'optionalCall', _54 => _54()]);
       if (!hasSubmenu) setOpen(false);
     };
     return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
@@ -3456,7 +3545,7 @@ var DropdownCheckboxItem = React22.forwardRef(
     const handleChange = (e) => {
       const next = e.target.checked;
       if (!controlled) setInternalChecked(next);
-      _optionalChain([onCheckedChange, 'optionalCall', _53 => _53(next)]);
+      _optionalChain([onCheckedChange, 'optionalCall', _55 => _55(next)]);
     };
     return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
       "div",
@@ -3497,7 +3586,7 @@ function DropdownRadioGroup({ value: controlledValue, defaultValue = "", onValue
   const value = controlled ? controlledValue : internalValue;
   const handleChange = (v) => {
     if (!controlled) setInternalValue(v);
-    _optionalChain([onValueChange, 'optionalCall', _54 => _54(v)]);
+    _optionalChain([onValueChange, 'optionalCall', _56 => _56(v)]);
   };
   return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, DropdownRadioContext.Provider, { value: { value, onValueChange: handleChange }, children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { role: "group", ...props, children }) });
 }
@@ -3505,9 +3594,9 @@ DropdownRadioGroup.displayName = "DropdownRadioGroup";
 var DropdownRadioItem = React22.forwardRef(
   ({ className, children, value, disabled, icon, ...props }, ref) => {
     const radioCtx = React22.useContext(DropdownRadioContext);
-    const checked = _optionalChain([radioCtx, 'optionalAccess', _55 => _55.value]) === value;
+    const checked = _optionalChain([radioCtx, 'optionalAccess', _57 => _57.value]) === value;
     const handleChange = () => {
-      if (!disabled) _optionalChain([radioCtx, 'optionalAccess', _56 => _56.onValueChange, 'call', _57 => _57(value)]);
+      if (!disabled) _optionalChain([radioCtx, 'optionalAccess', _58 => _58.onValueChange, 'call', _59 => _59(value)]);
     };
     return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
       "div",
@@ -3541,14 +3630,71 @@ var DropdownRadioItem = React22.forwardRef(
   }
 );
 DropdownRadioItem.displayName = "DropdownRadioItem";
+var DropdownAvatarHeader = React22.forwardRef(
+  ({ className, src, name, label, description, ...props }, ref) => /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
+    "div",
+    {
+      ref,
+      className: cn("flex items-center gap-2 px-3 py-2 select-none", className),
+      ...props,
+      children: [
+        /* @__PURE__ */ _jsxruntime.jsx.call(void 0, Avatar, { src, name, size: "sm" }),
+        /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "flex flex-col min-w-0", children: [
+          /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "text-xs font-medium text-foreground leading-tight", children: label }),
+          description && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "text-xs text-muted-foreground truncate leading-tight", children: description })
+        ] })
+      ]
+    }
+  )
+);
+DropdownAvatarHeader.displayName = "DropdownAvatarHeader";
+var DropdownAvatarItem = React22.forwardRef(
+  ({ className, src, name, label, description, disabled, onSelect, onClick, ...props }, ref) => {
+    const { setOpen } = useDropdown();
+    const handleClick = (e) => {
+      if (disabled) return;
+      _optionalChain([onClick, 'optionalCall', _60 => _60(e)]);
+      _optionalChain([onSelect, 'optionalCall', _61 => _61()]);
+      setOpen(false);
+    };
+    return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
+      "div",
+      {
+        ref,
+        role: "menuitem",
+        "aria-disabled": disabled,
+        tabIndex: disabled ? -1 : 0,
+        onClick: handleClick,
+        onKeyDown: (e) => {
+          if (e.key === "Enter" || e.key === " ") handleClick(e);
+        },
+        className: cn(
+          "flex items-center gap-2 px-3 py-2 w-full cursor-pointer select-none",
+          "transition-colors duration-fast",
+          disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-ac-gray-20",
+          className
+        ),
+        ...props,
+        children: [
+          /* @__PURE__ */ _jsxruntime.jsx.call(void 0, Avatar, { src, name, size: "sm" }),
+          /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "flex flex-col min-w-0", children: [
+            /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "text-xs font-medium text-foreground leading-tight", children: label }),
+            description && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "text-xs text-muted-foreground truncate leading-tight", children: description })
+          ] })
+        ]
+      }
+    );
+  }
+);
+DropdownAvatarItem.displayName = "DropdownAvatarItem";
 function DropdownSubMenu({ id, trigger, children, disabled }) {
   const subCtx = React22.useContext(SubDropdownContext);
-  const isOpen = _optionalChain([subCtx, 'optionalAccess', _58 => _58.openSub]) === id;
+  const isOpen = _optionalChain([subCtx, 'optionalAccess', _62 => _62.openSub]) === id;
   const ref = React22.useRef(null);
   const handleMouseEnter = () => {
-    if (!disabled) _optionalChain([subCtx, 'optionalAccess', _59 => _59.setOpenSub, 'call', _60 => _60(id)]);
+    if (!disabled) _optionalChain([subCtx, 'optionalAccess', _63 => _63.setOpenSub, 'call', _64 => _64(id)]);
   };
-  const handleMouseLeave = () => _optionalChain([subCtx, 'optionalAccess', _61 => _61.setOpenSub, 'call', _62 => _62(null)]);
+  const handleMouseLeave = () => _optionalChain([subCtx, 'optionalAccess', _65 => _65.setOpenSub, 'call', _66 => _66(null)]);
   return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
     "div",
     {
@@ -3623,11 +3769,11 @@ function Dialog({
   const open = controlled ? controlledOpen : internalOpen;
   const openDialog = React23.useCallback(() => {
     if (!controlled) setInternalOpen(true);
-    _optionalChain([onOpenChange, 'optionalCall', _63 => _63(true)]);
+    _optionalChain([onOpenChange, 'optionalCall', _67 => _67(true)]);
   }, [controlled, onOpenChange]);
   const close = React23.useCallback(() => {
     if (!controlled) setInternalOpen(false);
-    _optionalChain([onOpenChange, 'optionalCall', _64 => _64(false)]);
+    _optionalChain([onOpenChange, 'optionalCall', _68 => _68(false)]);
   }, [controlled, onOpenChange]);
   React23.useEffect(() => {
     if (!open || !closeOnEsc) return;
@@ -3649,7 +3795,7 @@ Dialog.displayName = "Dialog";
 function DialogTrigger({ children, asChild, onClick, ...props }) {
   const { openDialog } = useDialogContext();
   const handleClick = (e) => {
-    _optionalChain([onClick, 'optionalCall', _65 => _65(e)]);
+    _optionalChain([onClick, 'optionalCall', _69 => _69(e)]);
     openDialog();
   };
   if (asChild && React23.isValidElement(children)) {
@@ -3791,7 +3937,7 @@ DialogDescription.displayName = "DialogDescription";
 function DialogClose({ children, asChild, onClick, ...props }) {
   const { close } = useDialogContext();
   const handleClick = (e) => {
-    _optionalChain([onClick, 'optionalCall', _66 => _66(e)]);
+    _optionalChain([onClick, 'optionalCall', _70 => _70(e)]);
     close();
   };
   if (asChild && React23.isValidElement(children)) {
@@ -3833,7 +3979,7 @@ var Accordion = React24.forwardRef(
           newValues = openValues.includes(itemValue) ? openValues.filter((v) => v !== itemValue) : [...openValues, itemValue];
         }
         if (value === void 0) setInternalValues(newValues);
-        _optionalChain([onValueChange, 'optionalCall', _67 => _67(newValues)]);
+        _optionalChain([onValueChange, 'optionalCall', _71 => _71(newValues)]);
       },
       [type, openValues, value, onValueChange]
     );
@@ -3908,8 +4054,8 @@ var AccordionContent = React24.forwardRef(
     const rootContext = React24.useContext(AccordionContext);
     if (!itemContext) throw new Error("AccordionContent must be used within an AccordionItem");
     const { isOpen } = itemContext;
-    const backgroundColor = _optionalChain([rootContext, 'optionalAccess', _68 => _68.variant]) === "filled" ? _nullishCoalesce(rootContext.backgroundColor, () => ( "#FBFBFB")) : void 0;
-    const contentClassName = _optionalChain([rootContext, 'optionalAccess', _69 => _69.contentClassName]);
+    const backgroundColor = _optionalChain([rootContext, 'optionalAccess', _72 => _72.variant]) === "filled" ? _nullishCoalesce(rootContext.backgroundColor, () => ( "#FBFBFB")) : void 0;
+    const contentClassName = _optionalChain([rootContext, 'optionalAccess', _73 => _73.contentClassName]);
     return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
       "div",
       {
@@ -3970,7 +4116,7 @@ var Carousel = React25.forwardRef(
       (i) => {
         const next2 = loop ? (i % pageCount + pageCount) % pageCount : Math.max(0, Math.min(i, maxIndex));
         if (!controlled) setInternalIndex(next2);
-        _optionalChain([onIndexChange, 'optionalCall', _70 => _70(next2)]);
+        _optionalChain([onIndexChange, 'optionalCall', _74 => _74(next2)]);
       },
       [loop, pageCount, maxIndex, controlled, onIndexChange]
     );
@@ -4216,6 +4362,463 @@ var CarouselCounter = React25.forwardRef(
 );
 CarouselCounter.displayName = "CarouselCounter";
 
+// src/components/Slider/index.tsx
+
+
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
+function snapToStep(val, min, step) {
+  return Math.round((val - min) / step) * step + min;
+}
+function isRange(type) {
+  return type === "range" || type === "range-input";
+}
+function SliderCounter({ value }) {
+  return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 flex flex-col items-center pointer-events-none select-none", children: [
+    /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "flex items-center justify-center w-[34px] h-6 rounded bg-ac-gray-90 text-ac-white text-xs font-bold", children: value }),
+    /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "w-0 h-0 border-l-[5px] border-r-[5px] border-t-[5px] border-l-transparent border-r-transparent border-t-ac-gray-90" })
+  ] });
+}
+function SliderTrack({
+  values,
+  min,
+  max,
+  disabled,
+  activeThumb,
+  onThumbPointerDown,
+  onThumbKeyDown,
+  onTrackPointerDown,
+  trackRef,
+  thumbCount,
+  colorClassName
+}) {
+  const range = max - min;
+  const leftPct = (values[0] - min) / range * 100;
+  const rightPct = (values[1] - min) / range * 100;
+  const fillLeft = thumbCount === 1 ? 0 : leftPct;
+  const fillRight = thumbCount === 1 ? leftPct : rightPct;
+  return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
+    "div",
+    {
+      ref: trackRef,
+      className: "relative flex-1 flex items-center h-6 cursor-pointer",
+      onPointerDown: disabled ? void 0 : onTrackPointerDown,
+      children: [
+        /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "absolute inset-x-0 h-1.5 rounded-md bg-ac-gray-30" }),
+        /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+          "div",
+          {
+            className: cn(
+              "absolute h-1.5 rounded-md",
+              disabled ? "bg-ac-gray-40" : colorClassName,
+              !disabled && activeThumb === null && "opacity-50"
+            ),
+            style: { left: `${fillLeft}%`, right: `${100 - fillRight}%` }
+          }
+        ),
+        Array.from({ length: thumbCount }).map((_, i) => {
+          const val = i === 0 ? values[0] : values[1];
+          const pct = (val - min) / range * 100;
+          const isActive = activeThumb === i;
+          return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
+            "div",
+            {
+              className: "absolute top-1/2",
+              style: { left: `${pct}%`, transform: "translate(-50%, -50%)" },
+              children: [
+                isActive && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("absolute w-9 h-9 rounded-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 pointer-events-none opacity-20", colorClassName) }),
+                /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+                  "div",
+                  {
+                    role: "slider",
+                    "aria-valuemin": min,
+                    "aria-valuemax": max,
+                    "aria-valuenow": val,
+                    "aria-disabled": disabled,
+                    tabIndex: disabled ? -1 : 0,
+                    className: cn(
+                      "relative w-6 h-6 rounded-full shadow-md select-none cursor-grab active:cursor-grabbing",
+                      disabled ? "bg-ac-gray-40 cursor-not-allowed" : colorClassName
+                    ),
+                    onPointerDown: disabled ? void 0 : (e) => onThumbPointerDown(e, i),
+                    onKeyDown: disabled ? void 0 : (e) => onThumbKeyDown(e, i),
+                    children: isActive && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, SliderCounter, { value: val })
+                  }
+                )
+              ]
+            },
+            i
+          );
+        })
+      ]
+    }
+  );
+}
+function Slider({
+  type = "default",
+  colorClassName = "bg-ac-primary-50",
+  min = 0,
+  max = 100,
+  step = 1,
+  value: controlledValue,
+  defaultValue,
+  onValueChange,
+  disabled = false,
+  showMinMax = false,
+  leftIcon,
+  rightIcon,
+  className
+}) {
+  const range = isRange(type);
+  const thumbCount = range ? 2 : 1;
+  const hasInput = type === "input" || type === "range-input";
+  const toInternal = (v) => {
+    if (v === void 0) return range ? [min, max] : [Math.round((min + max) / 2), max];
+    if (Array.isArray(v)) return [v[0], v[1]];
+    return [v, max];
+  };
+  const [internalValues, setInternalValues] = React26.useState(
+    () => toInternal(_nullishCoalesce(defaultValue, () => ( controlledValue)))
+  );
+  const controlled = controlledValue !== void 0;
+  const values = controlled ? toInternal(controlledValue) : internalValues;
+  const valuesRef = React26.useRef(values);
+  valuesRef.current = values;
+  const setValues = React26.useCallback((next) => {
+    if (!controlled) setInternalValues(next);
+    if (range) {
+      _optionalChain([onValueChange, 'optionalCall', _75 => _75([next[0], next[1]])]);
+    } else {
+      _optionalChain([onValueChange, 'optionalCall', _76 => _76(next[0])]);
+    }
+  }, [controlled, range, onValueChange]);
+  const [inputStr0, setInputStr0] = React26.useState(String(values[0]));
+  const [inputStr1, setInputStr1] = React26.useState(String(values[1]));
+  const draggingIndex = React26.useRef(null);
+  React26.useEffect(() => {
+    if (!hasInput) return;
+    if (draggingIndex.current !== null) {
+      setInputStr0(String(values[0]));
+      setInputStr1(String(values[1]));
+    }
+  }, [values[0], values[1], hasInput]);
+  const trackRef = React26.useRef(null);
+  const [activeThumb, setActiveThumb] = React26.useState(null);
+  const pxToValue = React26.useCallback((clientX) => {
+    const rect = _optionalChain([trackRef, 'access', _77 => _77.current, 'optionalAccess', _78 => _78.getBoundingClientRect, 'call', _79 => _79()]);
+    if (!rect) return min;
+    const pct = clamp((clientX - rect.left) / rect.width, 0, 1);
+    const raw = min + pct * (max - min);
+    return clamp(snapToStep(raw, min, step), min, max);
+  }, [min, max, step]);
+  const handlePointerMove = React26.useCallback((e) => {
+    const idx = draggingIndex.current;
+    if (idx === null) return;
+    const cur = valuesRef.current;
+    const newVal = pxToValue(e.clientX);
+    const next = [cur[0], cur[1]];
+    if (idx === 0) {
+      next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    } else {
+      next[1] = Math.max(newVal, cur[0]);
+    }
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+  }, [pxToValue, range, setValues, hasInput]);
+  const handlePointerUp = React26.useCallback(() => {
+    draggingIndex.current = null;
+    setActiveThumb(null);
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove]);
+  const startDrag = React26.useCallback((idx) => {
+    draggingIndex.current = idx;
+    setActiveThumb(idx);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove, handlePointerUp]);
+  const nearestThumb = React26.useCallback((clientX) => {
+    if (thumbCount === 1) return 0;
+    const rect = _optionalChain([trackRef, 'access', _80 => _80.current, 'optionalAccess', _81 => _81.getBoundingClientRect, 'call', _82 => _82()]);
+    if (!rect) return 0;
+    const pct = (clientX - rect.left) / rect.width;
+    const cur = valuesRef.current;
+    const p0 = (cur[0] - min) / (max - min);
+    const p1 = (cur[1] - min) / (max - min);
+    return Math.abs(pct - p0) <= Math.abs(pct - p1) ? 0 : 1;
+  }, [thumbCount, min, max]);
+  const handleThumbPointerDown = (e, idx) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startDrag(idx);
+  };
+  const handleTrackPointerDown = (e) => {
+    e.preventDefault();
+    const cur = valuesRef.current;
+    const idx = nearestThumb(e.clientX);
+    const newVal = pxToValue(e.clientX);
+    const next = [cur[0], cur[1]];
+    if (idx === 0) {
+      next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    } else {
+      next[1] = Math.max(newVal, cur[0]);
+    }
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+    startDrag(idx);
+  };
+  const handleThumbKeyDown = (e, idx) => {
+    const delta = e.shiftKey ? step * 10 : step;
+    const cur = valuesRef.current;
+    let newVal = idx === 0 ? cur[0] : cur[1];
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      newVal = clamp(snapToStep(newVal + delta, min, step), min, max);
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      newVal = clamp(snapToStep(newVal - delta, min, step), min, max);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      newVal = min;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      newVal = max;
+    } else return;
+    const next = [cur[0], cur[1]];
+    if (idx === 0) next[0] = range ? Math.min(newVal, cur[1]) : newVal;
+    else next[1] = Math.max(newVal, cur[0]);
+    setValues(next);
+    if (hasInput) {
+      if (idx === 0) setInputStr0(String(next[0]));
+      else setInputStr1(String(next[1]));
+    }
+  };
+  const commitInput = (idx, raw) => {
+    const num = parseInt(raw, 10);
+    if (isNaN(num)) {
+      if (idx === 0) setInputStr0(String(valuesRef.current[0]));
+      else setInputStr1(String(valuesRef.current[1]));
+      return;
+    }
+    const val = clamp(snapToStep(num, min, step), min, max);
+    const cur = valuesRef.current;
+    const next = [cur[0], cur[1]];
+    if (idx === 0) next[0] = range ? Math.min(val, cur[1]) : val;
+    else next[1] = Math.max(val, cur[0]);
+    setValues(next);
+    if (idx === 0) setInputStr0(String(next[0]));
+    else setInputStr1(String(next[1]));
+  };
+  const track = /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+    SliderTrack,
+    {
+      values,
+      min,
+      max,
+      disabled,
+      activeThumb,
+      onThumbPointerDown: handleThumbPointerDown,
+      onThumbKeyDown: handleThumbKeyDown,
+      onTrackPointerDown: handleTrackPointerDown,
+      trackRef,
+      thumbCount,
+      colorClassName
+    }
+  );
+  return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, 
+    "div",
+    {
+      className: cn(
+        "flex items-center gap-3 w-full",
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      ),
+      children: [
+        type === "with-icon" && leftIcon && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 w-3 h-3 flex items-center justify-center text-foreground", children: leftIcon }),
+        type === "range-input" && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr0,
+            disabled,
+            onChange: (e) => setInputStr0(e.target.value),
+            onBlur: (e) => commitInput(0, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(0, e.target.value);
+            }
+          }
+        ) }),
+        (type === "default" || type === "range") && showMinMax && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 text-sm text-foreground", children: min }),
+        track,
+        type === "with-icon" && rightIcon && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 w-6 h-6 flex items-center justify-center text-foreground", children: rightIcon }),
+        type === "input" && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr0,
+            disabled,
+            onChange: (e) => setInputStr0(e.target.value),
+            onBlur: (e) => commitInput(0, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(0, e.target.value);
+            }
+          }
+        ) }),
+        type === "range-input" && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: "shrink-0 w-[60px]", children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+          TextInput,
+          {
+            type: "number",
+            size: "lg",
+            value: inputStr1,
+            disabled,
+            onChange: (e) => setInputStr1(e.target.value),
+            onBlur: (e) => commitInput(1, e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") commitInput(1, e.target.value);
+            }
+          }
+        ) }),
+        (type === "default" || type === "range") && showMinMax && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: "shrink-0 text-sm text-foreground", children: max })
+      ]
+    }
+  );
+}
+Slider.displayName = "Slider";
+
+// src/components/StepIndicator/index.tsx
+
+
+var sizeConfig = {
+  sm: {
+    complete: { outer: "w-3 h-3", check: "w-2 h-2" },
+    current: { outer: "w-4 h-4", inner: "w-2.5 h-2.5", ellipsis: "w-2 h-2" },
+    before: { outer: "w-3 h-3", dot: "w-2 h-2" },
+    iconRowH: "h-4",
+    iconColW: "w-4",
+    vertLineMin: "min-h-[32px]",
+    textSize: "text-xs",
+    stepTextSize: "text-xs",
+    titleMt: "mt-2",
+    vertPb: "pb-6"
+  },
+  md: {
+    complete: { outer: "w-4 h-4", check: "w-2.5 h-2.5" },
+    current: { outer: "w-5 h-5", inner: "w-3 h-3", ellipsis: "w-2.5 h-2.5" },
+    before: { outer: "w-4 h-4", dot: "w-2.5 h-2.5" },
+    iconRowH: "h-5",
+    iconColW: "w-5",
+    vertLineMin: "min-h-[40px]",
+    textSize: "text-sm",
+    stepTextSize: "text-sm",
+    titleMt: "mt-3",
+    vertPb: "pb-8"
+  },
+  lg: {
+    complete: { outer: "w-5 h-5", check: "w-3 h-3" },
+    current: { outer: "w-6 h-6", inner: "w-4 h-4", ellipsis: "w-3 h-3" },
+    before: { outer: "w-5 h-5", dot: "w-3 h-3" },
+    iconRowH: "h-6",
+    iconColW: "w-6",
+    vertLineMin: "min-h-[48px]",
+    textSize: "text-base",
+    stepTextSize: "text-sm",
+    titleMt: "mt-3",
+    vertPb: "pb-10"
+  }
+};
+function StepIcon({ state, size }) {
+  const cfg = sizeConfig[size];
+  if (state === "complete") {
+    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("rounded-full bg-current flex items-center justify-center shrink-0", cfg.complete.outer), children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, _lucidereact.Check, { className: cn("text-white", cfg.complete.check), strokeWidth: 3 }) });
+  }
+  if (state === "current") {
+    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("rounded-full border-[1.2px] border-current flex items-center justify-center shrink-0", cfg.current.outer), children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("rounded-full bg-current flex items-center justify-center", cfg.current.inner), children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, _lucidereact.Ellipsis, { className: cn("text-white", cfg.current.ellipsis), strokeWidth: 2.5 }) }) });
+  }
+  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("rounded-full bg-ac-gray-30 flex items-center justify-center shrink-0", cfg.before.outer), children: /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("rounded-full bg-ac-gray-40", cfg.before.dot) }) });
+}
+function StepIndicator({
+  steps,
+  current,
+  type = "horizontal",
+  style = "default",
+  size = "md",
+  showStepText = false,
+  colorClassName = "text-ac-primary-50",
+  className
+}) {
+  const cfg = sizeConfig[size];
+  const getState = (index) => {
+    if (index < current) return "complete";
+    if (index === current) return "current";
+    return "before";
+  };
+  if (type === "horizontal") {
+    return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("flex w-full", colorClassName, className), children: steps.map((step, i) => {
+      const state = getState(i);
+      const isFirst = i === 0;
+      const isLast = i === steps.length - 1;
+      return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "flex-1 flex flex-col items-center", children: [
+        /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: cn("flex items-center w-full", cfg.iconRowH), children: [
+          /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+            "div",
+            {
+              className: cn(
+                "flex-1 h-px",
+                isFirst ? "invisible" : getState(i - 1) === "complete" ? "bg-current" : "bg-ac-gray-40"
+              )
+            }
+          ),
+          /* @__PURE__ */ _jsxruntime.jsx.call(void 0, StepIcon, { state, size }),
+          /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+            "div",
+            {
+              className: cn(
+                "flex-1 h-px",
+                isLast ? "invisible" : state === "complete" ? "bg-current" : "bg-ac-gray-40"
+              )
+            }
+          )
+        ] }),
+        showStepText && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: cn("font-medium text-muted-foreground mt-1", cfg.stepTextSize), children: _nullishCoalesce(step.stepText, () => ( `${i + 1}\uB2E8\uACC4`)) }),
+        style === "default" && step.title && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: cn("font-medium text-foreground text-center", cfg.textSize, showStepText ? "mt-0.5" : cfg.titleMt), children: step.title })
+      ] }, i);
+    }) });
+  }
+  return /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "div", { className: cn("flex flex-col", colorClassName, className), children: steps.map((step, i) => {
+    const state = getState(i);
+    const isLast = i === steps.length - 1;
+    return /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: "flex gap-3", children: [
+      /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: cn("flex flex-col items-center shrink-0", cfg.iconColW), children: [
+        /* @__PURE__ */ _jsxruntime.jsx.call(void 0, StepIcon, { state, size }),
+        !isLast && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, 
+          "div",
+          {
+            className: cn(
+              "w-px flex-1",
+              cfg.vertLineMin,
+              state === "complete" ? "bg-current" : "bg-ac-gray-40"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ _jsxruntime.jsxs.call(void 0, "div", { className: cn("flex flex-col gap-1", !isLast && cfg.vertPb), children: [
+        showStepText && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: cn("font-medium text-muted-foreground leading-5", cfg.stepTextSize), children: _nullishCoalesce(step.stepText, () => ( `${i + 1}\uB2E8\uACC4`)) }),
+        style === "default" && step.title && /* @__PURE__ */ _jsxruntime.jsx.call(void 0, "span", { className: cn("font-medium text-foreground leading-5", cfg.textSize), children: step.title })
+      ] })
+    ] }, i);
+  }) });
+}
+StepIndicator.displayName = "StepIndicator";
+
 // src/index.ts
 
 
@@ -4303,5 +4906,9 @@ CarouselCounter.displayName = "CarouselCounter";
 
 
 
-exports.Accordion = Accordion; exports.AccordionContent = AccordionContent; exports.AccordionItem = AccordionItem; exports.AccordionTrigger = AccordionTrigger; exports.Avatar = Avatar; exports.Badge = Badge; exports.Breadcrumbs = Breadcrumbs; exports.Button = Button; exports.ButtonGroup = ButtonGroup; exports.Card = Card; exports.CardContent = CardContent; exports.CardDescription = CardDescription; exports.CardFooter = CardFooter; exports.CardFooterButtons = CardFooterButtons; exports.CardFooterInfo = CardFooterInfo; exports.CardFooterUser = CardFooterUser; exports.CardHeader = CardHeader; exports.CardMenu = CardMenu; exports.CardTitle = CardTitle; exports.Carousel = Carousel; exports.CarouselContent = CarouselContent; exports.CarouselCounter = CarouselCounter; exports.CarouselDots = CarouselDots; exports.CarouselItem = CarouselItem; exports.CarouselNext = CarouselNext; exports.CarouselPrevious = CarouselPrevious; exports.Checkbox = Checkbox; exports.CheckboxGroup = CheckboxGroup; exports.DatePicker = DatePicker; exports.DateRangePicker = DateRangePicker; exports.Dialog = Dialog; exports.DialogBody = DialogBody; exports.DialogClose = DialogClose; exports.DialogContent = DialogContent; exports.DialogDescription = DialogDescription; exports.DialogFooter = DialogFooter; exports.DialogHeader = DialogHeader; exports.DialogTitle = DialogTitle; exports.DialogTrigger = DialogTrigger; exports.Divider = Divider; exports.Dropdown = Dropdown; exports.DropdownCheckboxItem = DropdownCheckboxItem; exports.DropdownContent = DropdownContent; exports.DropdownItem = DropdownItem; exports.DropdownLabel = DropdownLabel; exports.DropdownRadioGroup = DropdownRadioGroup; exports.DropdownRadioItem = DropdownRadioItem; exports.DropdownSeparator = DropdownSeparator; exports.DropdownSubMenu = DropdownSubMenu; exports.DropdownTrigger = DropdownTrigger; exports.FAB = FAB; exports.FileInput = FileInput; exports.Pagination = Pagination; exports.ProgressIndicator = ProgressIndicator; exports.Radio = Radio; exports.RadioGroup = RadioGroup; exports.Select = Select; exports.SideNavigation = SideNavigation; exports.Snackbar = Snackbar; exports.SnackbarProvider = SnackbarProvider; exports.Switch = Switch; exports.TabContent = TabContent; exports.TabList = TabList; exports.TabTrigger = TabTrigger; exports.Tabs = Tabs; exports.TextInput = TextInput; exports.Textarea = Textarea; exports.ToggleGroup = ToggleGroup; exports.ToggleGroupItem = ToggleGroupItem; exports.Tooltip = Tooltip; exports.avatarVariants = avatarVariants; exports.badgeVariants = badgeVariants; exports.borderRadius = _chunkYTZJTG25cjs.borderRadius; exports.breakpoints = _chunkYTZJTG25cjs.breakpoints; exports.buttonVariants = buttonVariants; exports.cn = cn; exports.colors = _chunkYTZJTG25cjs.colors; exports.fabVariants = fabVariants; exports.fontSize = _chunkYTZJTG25cjs.fontSize; exports.fontWeight = _chunkYTZJTG25cjs.fontWeight; exports.lineHeight = _chunkYTZJTG25cjs.lineHeight; exports.spacing = _chunkYTZJTG25cjs.spacing; exports.useSnackbar = useSnackbar; exports.zIndex = _chunkYTZJTG25cjs.zIndex;
+
+
+
+
+exports.Accordion = Accordion; exports.AccordionContent = AccordionContent; exports.AccordionItem = AccordionItem; exports.AccordionTrigger = AccordionTrigger; exports.Avatar = Avatar; exports.Badge = Badge; exports.Breadcrumbs = Breadcrumbs; exports.Button = Button; exports.ButtonGroup = ButtonGroup; exports.Card = Card; exports.CardContent = CardContent; exports.CardDescription = CardDescription; exports.CardFooter = CardFooter; exports.CardFooterButtons = CardFooterButtons; exports.CardFooterInfo = CardFooterInfo; exports.CardFooterUser = CardFooterUser; exports.CardHeader = CardHeader; exports.CardMenu = CardMenu; exports.CardTitle = CardTitle; exports.Carousel = Carousel; exports.CarouselContent = CarouselContent; exports.CarouselCounter = CarouselCounter; exports.CarouselDots = CarouselDots; exports.CarouselItem = CarouselItem; exports.CarouselNext = CarouselNext; exports.CarouselPrevious = CarouselPrevious; exports.Checkbox = Checkbox; exports.CheckboxGroup = CheckboxGroup; exports.DatePicker = DatePicker; exports.DateRangePicker = DateRangePicker; exports.Dialog = Dialog; exports.DialogBody = DialogBody; exports.DialogClose = DialogClose; exports.DialogContent = DialogContent; exports.DialogDescription = DialogDescription; exports.DialogFooter = DialogFooter; exports.DialogHeader = DialogHeader; exports.DialogTitle = DialogTitle; exports.DialogTrigger = DialogTrigger; exports.Divider = Divider; exports.Dropdown = Dropdown; exports.DropdownAvatarHeader = DropdownAvatarHeader; exports.DropdownAvatarItem = DropdownAvatarItem; exports.DropdownCheckboxItem = DropdownCheckboxItem; exports.DropdownContent = DropdownContent; exports.DropdownItem = DropdownItem; exports.DropdownLabel = DropdownLabel; exports.DropdownRadioGroup = DropdownRadioGroup; exports.DropdownRadioItem = DropdownRadioItem; exports.DropdownSeparator = DropdownSeparator; exports.DropdownSubMenu = DropdownSubMenu; exports.DropdownTrigger = DropdownTrigger; exports.FAB = FAB; exports.FileInput = FileInput; exports.Pagination = Pagination; exports.ProgressIndicator = ProgressIndicator; exports.Radio = Radio; exports.RadioGroup = RadioGroup; exports.Select = Select; exports.SideNavigation = SideNavigation; exports.Slider = Slider; exports.Snackbar = Snackbar; exports.SnackbarProvider = SnackbarProvider; exports.StepIndicator = StepIndicator; exports.Switch = Switch; exports.TabContent = TabContent; exports.TabList = TabList; exports.TabTrigger = TabTrigger; exports.Tabs = Tabs; exports.TextInput = TextInput; exports.Textarea = Textarea; exports.ToggleGroup = ToggleGroup; exports.ToggleGroupItem = ToggleGroupItem; exports.Tooltip = Tooltip; exports.avatarVariants = avatarVariants; exports.badgeVariants = badgeVariants; exports.borderRadius = _chunkYTZJTG25cjs.borderRadius; exports.breakpoints = _chunkYTZJTG25cjs.breakpoints; exports.buttonVariants = buttonVariants; exports.cn = cn; exports.colors = _chunkYTZJTG25cjs.colors; exports.fabVariants = fabVariants; exports.fontSize = _chunkYTZJTG25cjs.fontSize; exports.fontWeight = _chunkYTZJTG25cjs.fontWeight; exports.lineHeight = _chunkYTZJTG25cjs.lineHeight; exports.spacing = _chunkYTZJTG25cjs.spacing; exports.useSnackbar = useSnackbar; exports.zIndex = _chunkYTZJTG25cjs.zIndex;
 //# sourceMappingURL=index.cjs.map
