@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               height={28}
               priority
             />
-            <Badge variant="primary" size="sm">v0.2.0</Badge>
+            <Badge variant="primary" size="sm">v0.3.0</Badge>
           </div>
           
           <div className="flex gap-2">
