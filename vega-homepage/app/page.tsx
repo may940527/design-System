@@ -17,14 +17,22 @@ import Link from "next/link";
 import CodeBadge from "@/app/components/CodeBadge";
 
 const INSTALL_CMD = "npm install @alphacode-ai/design-system";
+const NPMRC_CONTENT = `@alphacode-ai:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=\${NPM_TOKEN}`;
 
 export default function HomePage() {
   const [copied, setCopied] = useState(false);
+  const [copiedNpmrc, setCopiedNpmrc] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(INSTALL_CMD);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyNpmrc = () => {
+    navigator.clipboard.writeText(NPMRC_CONTENT);
+    setCopiedNpmrc(true);
+    setTimeout(() => setCopiedNpmrc(false), 2000);
   };
 
   return (
@@ -59,9 +67,16 @@ export default function HomePage() {
               <p className="text-md text-foreground">
                 설치 전 <CodeBadge>.npmrc</CodeBadge>에 registry와 GitHub PAT(<CodeBadge>NPM_TOKEN</CodeBadge>)를 설정하세요.
               </p>
-              <div className="rounded-lg bg-white p-4 font-mono text-xs border border-ac-gray-40 text-ac-gray-80 shadow-sm leading-relaxed">
+              <div className="relative rounded-lg bg-white p-4 font-mono text-xs border border-ac-gray-40 text-ac-gray-80 shadow-sm leading-relaxed">
                 <p>@alphacode-ai:registry=https://npm.pkg.github.com</p>
                 <p>{"//npm.pkg.github.com/:_authToken=${NPM_TOKEN}"}</p>
+                <button
+                  onClick={handleCopyNpmrc}
+                  className="absolute top-3 right-3 p-1.5 rounded-md text-ac-gray-50 hover:text-ac-gray-80 hover:bg-ac-gray-20 transition-colors"
+                  aria-label="복사"
+                >
+                  {copiedNpmrc ? <Check className="w-4 h-4 text-ac-green-50" /> : <Copy className="w-4 h-4" />}
+                </button>
               </div>
               <div className="relative rounded-lg bg-white p-4 font-mono text-sm border border-ac-gray-40 text-ac-gray-80 shadow-sm">
                 <span>{INSTALL_CMD}</span>
