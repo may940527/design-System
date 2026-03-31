@@ -1,6 +1,6 @@
 {
   "name": "@alphacode-ai/design-system",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "AlphaCode Design System — Tailwind preset, design tokens, and UI components",
   "type": "module",
   "main": "./dist/index.cjs",

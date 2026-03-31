@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@alphacode-ai/design-system": "workspace:*",
+    "@alphacode-ai/design-system": "^0.3.0",
     "autoprefixer": "^10.4.27",
     "date-fns": "4",
     "next": "16.1.6",
