@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCallback, useMemo } from "react";
 import { SideNavigation, SideNavItem } from "@alphacode-ai/design-system";
 
 const vegaUiItems: SideNavItem[] = [
@@ -87,18 +88,19 @@ function isParentOfActive(item: SideNavItem, pathname: string): boolean {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const activeId = getActiveId(pathname);
+  const activeId = useMemo(() => getActiveId(pathname), [pathname]);
 
   // active인 자식이 있는 부모 id를 defaultOpenIds로 넘겨 자동 펼침
-  const openParentIds = componentItems
-    .filter(item => isParentOfActive(item, pathname))
-    .map(item => item.id);
+  const openParentIds = useMemo(
+    () => componentItems.filter(item => isParentOfActive(item, pathname)).map(item => item.id),
+    [pathname]
+  );
 
-  const renderLink = (item: SideNavItem, children: React.ReactNode, className: string) => (
+  const renderLink = useCallback((item: SideNavItem, children: React.ReactNode, className: string) => (
     <Link href={item.href!} className={className}>
       {children}
     </Link>
-  );
+  ), []);
 
   return (
     <aside className="w-[250px] shrink-0 overflow-y-auto border-r border-border py-6 pl-4 pr-2 flex flex-col gap-6">
